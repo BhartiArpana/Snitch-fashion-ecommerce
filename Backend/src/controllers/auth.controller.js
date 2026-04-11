@@ -23,7 +23,7 @@ async function sendTokenResponse(user,res,message){
 }
 
 export async function register(req,res){
-    const {fullname,email,contact, password,role} = req.body
+    const {fullname,email,contact, password,isSeller} = req.body
     try{
          const isUserExist = await userModel.findOne({
         $or:[
@@ -43,7 +43,7 @@ export async function register(req,res){
         email,
         contact,
         password,
-        role
+        role:isSeller? 'seller':'buyer'
     })
     await sendTokenResponse(user,res,"User register successfully")
 

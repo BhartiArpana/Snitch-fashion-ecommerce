@@ -18,5 +18,7 @@ export const validateRegisterUser = [
       .isLength({min:6}).withMessage('Password must be contain atleast 6-characters'),
     body('fullname')
       .isLength({min:3}).withMessage('Fullname must be atleast 3 character '),
+    body('isSeller')
+      .isBoolean().withMessage("isSller must be a Boolean "),
     validateRequest
 ]
