@@ -1,0 +1,59 @@
+/* Light */
+body.light {
+  background: white;
+  color: black;
+}
+
+/* Dark */
+body.dark {
+  background: black;
+  color: white;
+}
+
+/* Button */
+body.light .theme-btn {
+  background: black;
+  color: white;
+}
+
+body.dark .theme-btn {
+  background: white;
+  color: black;
+}
+/* Toggle container */
+.toggle {
+  width: 60px;
+  height: 30px;
+  border-radius: 50px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* Circle */
+.circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: black;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+/* Dark mode */
+.toggle.dark {
+  background: #333;
+}
+
+.toggle.dark .circle {
+  transform: translateX(30px);
+  background: white;
+}

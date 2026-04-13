@@ -1,13 +1,22 @@
-
+import { RouterProvider } from 'react-router-dom'
+import { routes } from './app.routes'
+import {useSelector} from 'react-redux'
 import './App.css'
+import { useEffect } from 'react';
+import ThemeButton from '../features/theme/pages/ThemeButton';
 
 function App() {
+  const theme = useSelector((state) => state.theme.theme);
 
+  useEffect(() => {
+    document.body.className = theme;
+  }, [theme]);
 
   return (
-    <>
-    <h1>Hello world</h1>
-    </>
+  <>
+
+    <RouterProvider router={routes} />
+  </>
   )
 }
 

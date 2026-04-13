@@ -17,7 +17,7 @@ export const authSlice = createSlice({
         },
         setError:(state,action)=>{
             state.error = action.payload
-        }
+        },
     }
 
 })

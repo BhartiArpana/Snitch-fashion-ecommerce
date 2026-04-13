@@ -7,7 +7,16 @@ if(!process.env.MONGO_URI){
 if(!process.env.JWT_SECRET_KEY){
     throw new Error('JWT_SECRET_KEY is not defined in environment variable')
 }
+if(!process.env.GOOGLE_CLIENT_ID){
+    throw new Error('GOOGLE_CLIENT_ID is not defined in environment variable')
+}
+if(!process.env.GOOGLE_CLIENT_SECRET){
+    throw new Error('GOOGLE_CLIENT_SECRET is not defined in environment variable')
+}
+
 export const config = {
     MONGO_URI : process.env.MONGO_URI,
-    JWT_SECRET_KEY:process.env.JWT_SECRET_KEY
+    JWT_SECRET_KEY:process.env.JWT_SECRET_KEY,
+    GOOGLE_CLIENT_ID:process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET:process.env.GOOGLE_CLIENT_SECRET
 }

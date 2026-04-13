@@ -1,0 +1,96 @@
+/* Container */
+.register-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Themes */
+body.light {
+  background: white;
+  color: black;
+}
+
+body.dark {
+  background: black;
+  color: white;
+}
+
+/* Form */
+.register-form {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* 🔥 Animation */
+  animation: fadeSlide 0.5s ease;
+}
+
+/* Inputs */
+.register-form input,
+.register-form select {
+  padding: 10px;
+  outline: none;
+  transition: all 0.3s ease; /* 🔥 smooth focus */
+}
+
+/* Light Inputs */
+body.light input,
+body.light select {
+  background: white;
+  color: black;
+  border: 1px solid black;
+}
+
+/* Dark Inputs */
+body.dark input,
+body.dark select {
+  background: black;
+  color: white;
+  border: 1px solid white;
+}
+
+/* Focus Animation */
+.register-form input:focus,
+.register-form select:focus {
+  transform: scale(1.03);   /* 🔥 thoda zoom */
+}
+
+/* Button */
+.register-form button {
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease; /* 🔥 smooth hover */
+  border: none;
+}
+
+/* Light Button */
+body.light button {
+  background: black;
+  color: white;
+}
+
+/* Dark Button */
+body.dark button {
+  background: white;
+  color: black;
+}
+
+/* Hover Animation */
+.register-form button:hover {
+  transform: translateY(-2px); /* 🔥 lift effect */
+}
+
+/* 🔥 Keyframe Animation */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
