@@ -14,18 +14,21 @@ const userSchema = new mongoose.Schema({
     },
     contact:{
          type:String,
-         required:true,
          unique:true
     },
     password:{
         type:String,
-        required:true
+        required:function(){
+            return !this.googleId
+        }
     },
     role:{
         type:String,
         enum:['seller','buyer'],
         default:'buyer'
-    }
+    },
+    googleId:String,
+    photos:String
 })
 
 userSchema.pre("save",async function(){
