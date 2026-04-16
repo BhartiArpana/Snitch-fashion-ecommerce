@@ -19,7 +19,7 @@ export async function authenticateSeller(req,res,next){
     }
     if(user.role!=='seller'){
         return res.status(403).json({
-            message:"Forbidden"
+            message:"forbidden"
         })
     }
     req.user = user

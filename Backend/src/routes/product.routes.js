@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticateSeller } from "../middlewares/auth.middleware.js";
 import multer from 'multer'
-import { createProduct, getAllProducts } from "../controllers/products.controller.js";
+import { createProduct, getSellerProduct } from "../controllers/products.controller.js";
 
 const upload  = multer({
     storage:multer.memoryStorage(),
@@ -13,6 +13,6 @@ const upload  = multer({
 const router = Router()
 
 router.post('/',upload.array('images',7),authenticateSeller,createProduct)
-router.get('/seller',authenticateSeller,getAllProducts)
+router.get('/seller',authenticateSeller,getSellerProduct)
 
 export default router

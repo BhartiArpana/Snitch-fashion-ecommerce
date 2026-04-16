@@ -6,12 +6,14 @@ export async function createProduct (req,res){
     const {title,description,priceAmount,priceCurrency} = req.body
     const user = req.user
 
-    const image = await Promise.all(req.files.map(async(file)=>{
-        return await uploadFile({
-            buffer:file.buffer,
-            fileName:file.originalname
-        })
+   const image = req.files
+  ? await Promise.all(req.files.map(async (file) => {
+      return await uploadFile({
+        buffer: file.buffer,
+        fileName: file.originalname
+      })
     }))
+  : []
 
     const product = await productModel.create({
         title,
@@ -32,7 +34,7 @@ export async function createProduct (req,res){
 
 }
 
-export async function getAllProducts(req,res){
+export async function getSellerProduct(req,res){
     const user = req.user
 
     const product = await productModel.find({seller:user._id})
