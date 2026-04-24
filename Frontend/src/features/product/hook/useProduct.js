@@ -15,7 +15,8 @@ export function useProduct(){
         return data.product
     }
     return {
-        handleCreateProduct
+        handleCreateProduct,
+        handleGetSellerProduct
     }
 }
 
