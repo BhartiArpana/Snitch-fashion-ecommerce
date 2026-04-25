@@ -13,3 +13,8 @@ export const getSellerProduct = async()=>{
     const response = await productInstanceApi.get('/seller')
     return response.data
 }
+
+export const getAllProducts= async()=>{
+    const response = await productInstanceApi.get('/allProducts')
+    return response.data
+}
