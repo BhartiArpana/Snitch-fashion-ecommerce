@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useProduct } from '../hook/useProduct'
 import '../styles/home.css'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
     const {handleAllProducts} = useProduct()
     const products = useSelector(state=>state.product.product)
     const [theme, setTheme] = useState('light')
+    const navigate = useNavigate()
 
     useEffect(()=>{
         handleAllProducts()
@@ -28,7 +30,9 @@ const Home = () => {
             <main className="product-grid">
                 {products && products.length > 0 ? (
                     products.map((item, index) => (
-                        <div key={index} className="product-card">
+                        <div key={index} className="product-card" 
+                         onClick={()=>navigate(`/product/${item._id}`)}
+                        >
                             <div className="product-image-container">
                                 <img 
                                     src={(item.image && item.image.length > 0) ? item.image[0].url : 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=400&q=80'} 

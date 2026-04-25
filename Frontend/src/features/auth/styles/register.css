@@ -1,86 +1,212 @@
 /* Container */
 .register-container {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  background-color: var(--bg-color);
+  font-family: 'Outfit', sans-serif;
 }
 
-/* Themes */
-body.light {
-  background: white;
-  color: black;
+/* Themes via body classes */
+body.light .register-container {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --border-color: #e0e0e0;
+  --btn-bg: #000000;
+  --btn-text: #ffffff;
 }
 
-body.dark {
-  background: black;
-  color: white;
+body.dark .register-container {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --border-color: #333333;
+  --btn-bg: #ffffff;
+  --btn-text: #000000;
 }
 
-/* Form */
+/* Form Box */
 .register-form {
-  width: 300px;
+  width: 100%;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-
-  /* 🔥 Animation */
+  background: var(--bg-color);
+  color: var(--text-color);
+  padding: 50px 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
   animation: fadeSlide 0.5s ease;
+}
+
+body.dark .register-form {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+}
+
+.register-form h2 {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Google Button */
+.google-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid #d5d9d9;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: 'Outfit', sans-serif;
+}
+
+body.light .google-btn {
+  background-color: #ffffff;
+  color: #0f1111;
+  border-color: #d5d9d9;
+}
+
+body.light .google-btn:hover {
+  background-color: #f7fafa;
+}
+
+body.dark .google-btn {
+  background-color: transparent;
+  color: #ffffff;
+  border-color: #555555;
+}
+
+body.dark .google-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Divider */
+.divider {
+  text-align: center;
+  margin: 25px 0;
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
 }
 
 /* Inputs */
 .register-form input,
 .register-form select {
-  padding: 10px;
+  width: 100%;
+  padding: 14px 0;
+  margin-bottom: 20px;
+  background: transparent;
+  color: var(--text-color);
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 15px;
+  font-family: inherit;
   outline: none;
-  transition: all 0.3s ease; /* 🔥 smooth focus */
+  transition: border-color 0.3s ease;
+  border-radius: 0;
 }
 
-/* Light Inputs */
-body.light input,
-body.light select {
-  background: white;
-  color: black;
-  border: 1px solid black;
-}
-
-/* Dark Inputs */
-body.dark input,
-body.dark select {
-  background: black;
-  color: white;
-  border: 1px solid white;
-}
-
-/* Focus Animation */
 .register-form input:focus,
 .register-form select:focus {
-  transform: scale(1.03);   /* 🔥 thoda zoom */
+  border-bottom-color: var(--text-color);
 }
 
-/* Button */
-.register-form button {
-  padding: 10px;
+.register-form input::placeholder {
+  color: #999;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/* Select Styling */
+.register-form select {
   cursor: pointer;
-  transition: all 0.3s ease; /* 🔥 smooth hover */
-  border: none;
+  appearance: none;
+}
+.register-form select option {
+  background: var(--bg-color);
+  color: var(--text-color);
 }
 
-/* Light Button */
-body.light button {
-  background: black;
-  color: white;
+/* Submit Button */
+.register-btn {
+  width: 100%;
+  padding: 16px;
+  margin-top: 10px;
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid var(--btn-bg);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-/* Dark Button */
-body.dark button {
-  background: white;
-  color: black;
+.register-btn:hover {
+  background-color: transparent;
+  color: var(--text-color);
+  border-color: var(--text-color);
 }
 
-/* Hover Animation */
-.register-form button:hover {
-  transform: translateY(-2px); /* 🔥 lift effect */
+/* Switch Link */
+.switch {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  color: #888;
+}
+
+.switch a {
+  color: var(--text-color);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: opacity 0.3s ease;
+}
+
+.switch a:hover {
+  opacity: 0.7;
 }
 
 /* 🔥 Keyframe Animation */
@@ -92,5 +218,26 @@ body.dark button {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Responsiveness */
+@media (max-width: 480px) {
+  .register-container {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .register-form {
+    padding: 40px 25px;
+    box-shadow: none;
+    border: none !important;
+    border-radius: 0;
+    min-height: 100vh;
+  }
+  
+  .register-form h2 {
+    font-size: 24px;
+    margin-top: 20px;
   }
 }

@@ -46,6 +46,10 @@ function Register() {
    }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "/api/auth/google";
+  };
+
   return (
   <>
   <ThemeButton />
@@ -53,6 +57,13 @@ function Register() {
    
       <form className="register-form" onSubmit={handleSubmit}>
         <h2>Create Account</h2>
+
+        <button type="button" className="google-btn" onClick={handleGoogleLogin}>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" className="google-icon" />
+          Continue with Google
+        </button>
+
+        <div className="divider">OR</div>
 
         <input
           type="text"
@@ -99,7 +110,11 @@ function Register() {
           <option value="seller">Seller</option>
         </select>
 
-        <button type="submit">Register</button>
+        <button type="submit" className="register-btn">Register</button>
+
+        <p className="switch">
+          Already have an account? <a href="/login">Login</a>
+        </p>
       </form>
     </div>
     </>

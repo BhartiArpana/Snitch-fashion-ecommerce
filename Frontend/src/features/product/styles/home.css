@@ -10,7 +10,6 @@
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   transition: all 0.3s ease;
   padding-bottom: 50px;
 }
@@ -66,8 +65,8 @@
 /* Product Grid */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 24px;
   padding: 40px;
   max-width: 1400px;
   margin: 0 auto;
