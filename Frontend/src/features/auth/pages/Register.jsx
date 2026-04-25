@@ -31,14 +31,19 @@ function Register() {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    await handleRegister({
+    const user = await handleRegister({
         fullname:formData.fullname,
         email:formData.email,
         contact:formData.contact,
         password:formData.password,
        isSeller: formData.role === "seller"? true : false 
     })
-    naviagte('/')
+   if(user.role ==='seller'){
+     naviagte('/seller/dashboard')
+   }
+   else if(user.role === 'buyer'){
+     naviagte('/')
+   }
   };
 
   return (

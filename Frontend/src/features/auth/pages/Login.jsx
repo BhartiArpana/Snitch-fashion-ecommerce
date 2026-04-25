@@ -1,7 +1,7 @@
 import { useState } from "react";
 import '../styles/login.css'
 import { useAuth } from "../hook/useAuth";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function Login() {
     const {handleLogin} = useAuth()
@@ -17,10 +17,14 @@ function Login() {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    await handleLogin({
+    const user = await handleLogin({
         email:form.email,
         password:form.password
     })
+    if(user.role === 'seller'){
+      navigate('/seller/dashboard')
+    }
+    else if(user.role === 'buyer')
     navigate('/')
   };
 

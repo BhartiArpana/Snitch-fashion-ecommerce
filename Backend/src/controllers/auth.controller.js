@@ -90,14 +90,32 @@ export const googleCallback = async(req,res)=>{
          fullname:displayName,
          photos:photo
        })
-       const token = jwt.sign({
+      
+
+   
+    }
+     const token = jwt.sign({
         id:user._id,
        },config.JWT_SECRET_KEY,{
         expiresIn:'7d'
        })
-
-       res.cookie('token',token)
-    }
+     res.cookie('token',token)
     res.redirect('http://localhost:5173/')
     
+}
+
+export const getMe = async(req,res)=>{
+   const user = req.user
+   res.status(200).json({
+    message:'User fetched successfully!',
+    success:true,
+    user:{
+        id:user._id,
+        fullname:user.fullname,
+        email:user.email,
+        contact:user.contact,
+        role:user.role
+    }
+   })
+   
 }
