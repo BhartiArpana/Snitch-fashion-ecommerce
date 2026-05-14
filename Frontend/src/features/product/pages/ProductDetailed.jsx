@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useProduct } from '../hook/useProduct'
 import '../styles/productDetailed.css'
-import Navbar from '../components/navbar'
+import Navbar from '../components/Navbar'
+import { useSelector } from 'react-redux'
 
 const ProductDetailed = () => {
     const { productId } = useParams()
     const [product, setProduct] = useState(null)
-    const [theme, setTheme] = useState('light')
     const { handleGetProductById } = useProduct()
+    const user = useSelector((state)=>state.auth.user)
+    const theme = useSelector((state)=>state.theme.theme) || 'light'
 
     const [activeImageIndex, setActiveImageIndex] = useState(0)
 
@@ -27,19 +29,12 @@ const ProductDetailed = () => {
         }
     }, [productId])
 
-    const toggleTheme = () => {
-        setTheme(prev => prev === 'light' ? 'dark' : 'light')
-    }
+    // Theme handled by Redux
 
     if (!product) {
         return (
             <div className={`product-detailed-container ${theme}`}>
-                 <header className="pd-header">
-                    <Link to="/" className="pd-brand-title">SNITCH</Link>
-                    <button className="theme-toggle" onClick={toggleTheme}>
-                        {theme === 'light' ? 'DARK MODE' : 'LIGHT MODE'}
-                    </button>
-                </header>
+                 <Navbar />
                 <div className="pd-loading">Loading Product...</div>
             </div>
         )
@@ -57,12 +52,7 @@ const ProductDetailed = () => {
 
     return (
         <div className={`product-detailed-container ${theme}`}>
-            {/* <header className="pd-header">
-                <Link to="/" className="pd-brand-title">SNITCH</Link>
-                <button className="theme-toggle" onClick={toggleTheme}>
-                    {theme === 'light' ? 'DARK MODE' : 'LIGHT MODE'}
-                </button>
-            </header> */}
+            {/* Navbar handles brand, search, and theme toggle */}
             <Navbar />
 
             <main className="pd-main">
@@ -107,6 +97,28 @@ const ProductDetailed = () => {
                     </div>
                 </div>
             </main>
+
+            {user?.role === 'seller' && (
+                <section className="pd-bottom-variant-section">
+                    <div className="pd-variant-container">
+                        <h2 className="pd-variant-title">Seller Panel: Add New Variant</h2>
+                        <div className="pd-variant-form">
+                            <div className="pd-variant-input-group">
+                                <label>Variant Image</label>
+                                <input type="file" accept="image/*" className="pd-variant-input file-input" />
+                            </div>
+                            <div className="pd-variant-row">
+                                <input type="number" placeholder="Price (₹)" className="pd-variant-input" />
+                                <input type="number" placeholder="Stocks Available" className="pd-variant-input" />
+                            </div>
+                            <input type="text" placeholder="Attribute (e.g. Size M, Color Red)" className="pd-variant-input" />
+                            <button className="pd-btn pd-variant-submit">
+                                Create Variant
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            )}
         </div>
     )
 }
