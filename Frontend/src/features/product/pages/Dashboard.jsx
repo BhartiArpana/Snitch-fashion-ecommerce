@@ -1,48 +1,57 @@
-import React, { useEffect } from 'react'
-import { useProduct } from '../hook/useProduct'
-import { useSelector } from 'react-redux'
-import '../styles/dashboard.css'
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import { useSelector } from 'react-redux';
+import { useProduct } from '../hook/useProduct';
+import '../styles/dashboard.css';
 
 const Dashboard = () => {
-  const { handleGetSellerProduct } = useProduct()
-  const sellerProducts = useSelector(state => state.product.sellerProducts)
+  const navigate = useNavigate();
+  const { handleGetSellerProduct } = useProduct();
+  const sellerProducts = useSelector((state) => state.product.sellerProducts) || [];
+  const theme = useSelector((state) => state.theme.theme) || 'light';
 
   useEffect(() => {
-    handleGetSellerProduct()
-  }, [])
+    handleGetSellerProduct();
+  }, []);
 
   return (
-    <div className="dashboard">
-
-      <div className="product-grid">
-        {sellerProducts?.map((item) => (
-          <div key={item._id} className="product-card">
-
-            {/* Wishlist */}
-            <div className="wishlist">♡</div>
-
-            {/* Image */}
-            <div className="image-box">
-              <img
-                src={item.image?.[0]?.url || 'https://via.placeholder.com/300'}
-                alt={item.title}
-              />
+    <div className={`dashboard-container ${theme}`}>
+      <Navbar />
+      
+      <div className="dashboard-content">
+        <h1 className="dashboard-title">Your Products</h1>
+        
+        <div className="product-grid">
+          {sellerProducts.map((product) => (
+            <div 
+              key={product._id || product.id} 
+              className="product-card"
+              onClick={() => navigate(`/product/${product._id || product.id}`)}
+            >
+              <div className="product-image-container">
+                <img 
+                  src={product.image?.[0]?.url || product.images?.[0]?.url || 'https://via.placeholder.com/400x500?text=No+Image'} 
+                  alt={product.title || product.name || 'Product'} 
+                  className="product-image" 
+                />
+              </div>
+              <div className="product-details">
+                <h3 className="product-name">{product.title || product.name}</h3>
+                <p className="product-price">₹{product.price?.amount ?? product.price}</p>
+              </div>
             </div>
-
-            {/* Info */}
-            <div className="product-info">
-              <p className="title">{item.title}</p>
-              <p className="price">₹{item.price?.amount}</p>
-
-              
+          ))}
+          
+          {sellerProducts.length === 0 && (
+            <div className="no-products">
+              <p>You haven't uploaded any products yet.</p>
             </div>
-
-          </div>
-        ))}
+          )}
+        </div>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

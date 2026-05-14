@@ -2,8 +2,13 @@ import { useState } from "react";
 import '../styles/login.css'
 import { useAuth } from "../hook/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
+import { setError } from "../state/auth.slice";
+import { useDispatch, useSelector } from "react-redux";
+import ErrorPopUp from "../components/ErrorPopUp";
 
 function Login() {
+  const error = useSelector((state)=> state.auth.error)
+  const dispatch = useDispatch()
     const {handleLogin} = useAuth()
     const navigate = useNavigate()
   const [form, setForm] = useState({
@@ -34,7 +39,10 @@ function Login() {
 
   return (
     <div className="auth-container">
-      
+     <ErrorPopUp
+        message={error}
+        onClose={() => dispatch(setError(null))}
+      />
       <div className="auth-box">
         <h2>Login</h2>
 

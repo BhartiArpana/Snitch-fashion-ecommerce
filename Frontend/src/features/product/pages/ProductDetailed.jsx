@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useProduct } from '../hook/useProduct'
 import '../styles/productDetailed.css'
+import Navbar from '../components/navbar'
 
 const ProductDetailed = () => {
     const { productId } = useParams()
@@ -56,12 +57,13 @@ const ProductDetailed = () => {
 
     return (
         <div className={`product-detailed-container ${theme}`}>
-            <header className="pd-header">
+            {/* <header className="pd-header">
                 <Link to="/" className="pd-brand-title">SNITCH</Link>
                 <button className="theme-toggle" onClick={toggleTheme}>
                     {theme === 'light' ? 'DARK MODE' : 'LIGHT MODE'}
                 </button>
-            </header>
+            </header> */}
+            <Navbar />
 
             <main className="pd-main">
                 <div className="pd-image-section">

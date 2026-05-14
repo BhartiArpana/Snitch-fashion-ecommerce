@@ -11,3 +11,6 @@ html,body,#root{
   width: 100%;
   font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+body{
+  position: relative;
+}
