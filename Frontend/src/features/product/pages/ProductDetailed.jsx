@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useProduct } from '../hook/useProduct'
 import '../styles/productDetailed.css'
@@ -28,10 +28,15 @@ const ProductDetailed = () => {
     const [toast, setToast] = useState(null)
     const fileInputRef = useRef(null)
 
+    const [selectedVariant, setSelectedVariant] = useState(null)
+    const [selectedAttributes, setSelectedAttributes] = useState({})
+
     const fetchDetails = async () => {
         try {
             const data = await handleGetProductById(productId)
             setProduct(data)
+            setSelectedVariant(null)
+            setSelectedAttributes({})
         } catch (error) {
             console.error('Failed to fetch product details', error)
         }
@@ -48,6 +53,33 @@ const ProductDetailed = () => {
         setTimeout(() => setToast(null), 3000)
     }
 
+    const variants = product?.variants || []
+
+    const availableAttributes = useMemo(() => {
+        const attrs = {};
+        let hasAnyAttributes = false;
+
+        variants.forEach(v => {
+            if (v.attributes && Object.keys(v.attributes).length > 0) {
+                hasAnyAttributes = true;
+                Object.entries(v.attributes).forEach(([k, val]) => {
+                    if (!attrs[k]) attrs[k] = new Set();
+                    attrs[k].add(val);
+                });
+            }
+        });
+
+        if (!hasAnyAttributes) {
+            attrs['Style'] = new Set(['Standard']);
+        }
+
+        const formatted = {};
+        for (const k in attrs) {
+            formatted[k] = Array.from(attrs[k]);
+        }
+        return formatted;
+    }, [variants]);
+
     if (!product) {
         return (
             <div className={`product-detailed-container ${theme}`}>
@@ -57,19 +89,51 @@ const ProductDetailed = () => {
         )
     }
 
-    const price =
-        product.price && typeof product.price === 'object'
-            ? product.price.amount
-            : product.price
+    const handleAttributeSelect = (key, value) => {
+        if (key === 'Style' && value === 'Standard') {
+            setSelectedAttributes({ [key]: value });
+            const noAttrVariant = variants.find(v => !v.attributes || Object.keys(v.attributes).length === 0);
+            setSelectedVariant(noAttrVariant || null);
+            setActiveImageIndex(0);
+            return;
+        }
 
-    const images = product.image || []
-    const hasMultipleImages = images.length > 1
-    const imageUrl =
-        images.length > 0
-            ? images[activeImageIndex].url
-            : 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=800&q=80'
+        const newSelected = { ...selectedAttributes, [key]: value };
+        
+        const matchedVariant = variants.find(v => {
+            return Object.entries(newSelected).every(([k, val]) => {
+                return v.attributes && v.attributes[k] === val;
+            });
+        });
+        
+        if (matchedVariant) {
+            setSelectedAttributes(newSelected);
+            setSelectedVariant(matchedVariant);
+            setActiveImageIndex(0);
+        } else {
+            const fallbackVariant = variants.find(v => v.attributes && v.attributes[key] === value);
+            if (fallbackVariant) {
+                setSelectedAttributes(fallbackVariant.attributes || {});
+                setSelectedVariant(fallbackVariant);
+                setActiveImageIndex(0);
+            } else {
+                setSelectedAttributes(newSelected);
+            }
+        }
+    };
 
-    const variants = product.variants || []
+    const basePrice = product.price && typeof product.price === 'object' ? product.price.amount : product.price;
+    const displayPrice = selectedVariant?.price?.amount || basePrice;
+    
+    const baseImages = product.image || [];
+    const displayImages = (selectedVariant && selectedVariant.images && selectedVariant.images.length > 0) 
+        ? selectedVariant.images 
+        : baseImages;
+        
+    const hasMultipleImages = displayImages.length > 1;
+    const imageUrl = displayImages.length > 0
+            ? (displayImages[activeImageIndex]?.url || displayImages[0].url)
+            : 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=800&q=80';
 
     // ── Form Handlers ──────────────────────────────────────────────────────────
 
@@ -179,7 +243,7 @@ const ProductDetailed = () => {
                     </div>
                     {hasMultipleImages && (
                         <div className="pd-thumbnail-list">
-                            {images.map((img, index) => (
+                            {displayImages.map((img, index) => (
                                 <div
                                     key={img._id || index}
                                     className={`pd-thumbnail-wrapper ${index === activeImageIndex ? 'active' : ''}`}
@@ -198,11 +262,33 @@ const ProductDetailed = () => {
 
                 <div className="pd-info-section">
                     <h1 className="pd-title">{product.title}</h1>
-                    <p className="pd-price">₹ {price}</p>
+                    <p className="pd-price">₹ {displayPrice}</p>
                     <div className="pd-description">
                         {product.description ||
                             'Premium quality clothing exclusive to Snitch. Discover the latest trends and elevate your wardrobe.'}
                     </div>
+
+                    {Object.keys(availableAttributes).length > 0 && (
+                        <div className="pd-attributes-selector">
+                            {Object.entries(availableAttributes).map(([key, values]) => (
+                                <div key={key} className="pd-attribute-group">
+                                    <h4 className="pd-attr-title">{key}</h4>
+                                    <div className="pd-attr-values">
+                                        {values.map(val => (
+                                            <button
+                                                key={val}
+                                                className={`pd-attr-btn ${selectedAttributes[key] === val ? 'selected' : ''}`}
+                                                onClick={() => handleAttributeSelect(key, val)}
+                                            >
+                                                {val}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="pd-actions">
                         <button className="pd-btn pd-add-to-cart">Add to Cart</button>
                         <button className="pd-btn pd-buy-now">Buy Now</button>
