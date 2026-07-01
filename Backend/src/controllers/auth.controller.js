@@ -1,121 +1,53 @@
-import userModel from "../models/user.model.js";
+import userModel from '../model/user.model.js'
+import { config } from '../config/config.js'
 import jwt from 'jsonwebtoken'
-import { config } from "../config/config.js";
-import { response } from "express";
 
-async function sendTokenResponse(user,res,message){
+const generateToken = (user,res,message)=>{
     const token = jwt.sign({
         id:user._id
-    },config.JWT_SECRET_KEY,{
-        expiresIn:'7d'
-    })
+    },config.JWT_SECRET_KEY,{expiresIn:'7d'})
+     
     res.cookie('token',token)
-    res.status(201).json({
+    res.status(200).json({
         message,
-        success:true,
-        user:{
-            id:user._id,
-            fullname:user.fullname,
-            email:user.email,
-            contact:user.contact,
-            role:user.role
-        }
-    })
-}
-
-export async function register(req,res){
-    const {fullname,email,contact, password,isSeller} = req.body
-    console.log('fullname',fullname,email,contact,password,isSeller);
-    
-    try{
-         const isUserExist = await userModel.findOne({
-        $or:[
-            {email:email},
-            {contact:contact}
-        ]
-    })
-
-    if(isUserExist){
-        return res.status(400).json({
-            message:'User already exist with this email and contact'
-        })
-    }
-
-    const user = await userModel.create({
-        fullname,
-        email,
-        contact,
-        password,
-        role:isSeller? 'seller':'buyer'
-    })
-    await sendTokenResponse(user,res,"User register successfully")
-
-    }catch(err){
-        console.log("Error",err);
-        return res.status(500).json({message:"Server Error" })
-        
-    }
-   
-}
-
-export async function login(req,res){
-    const {email,password} = req.body
-    const user = await userModel.findOne({email})
-    if(!user){
-        return res.status(400).json({
-            message:"Invalid email and password"
-        })
-    }
-    const isPasswordCorrect = await user.comparePassword(password)
-    if(!isPasswordCorrect){
-        return res.status(400).json({
-            message:"Invalid email and password"
-        })
-    }
-    await sendTokenResponse(user,res,"User loggedin successfully")
-
-}
-
-export const googleCallback = async(req,res)=>{
-   
-    const {id,displayName,emails,photos} = req.user
-    const email = emails[0].value
-    const photo = photos[0].value
-
-    let user = await userModel.findOne({email})
-    if(!user){
-       user = await userModel.create({
-         googleId:id,
-         email:email,
-         fullname:displayName,
-         photos:photo
-       })
-      
-
-   
-    }
-     const token = jwt.sign({
-        id:user._id,
-       },config.JWT_SECRET_KEY,{
-        expiresIn:'7d'
-       })
-     res.cookie('token',token)
-    res.redirect('http://localhost:5173/')
-    
-}
-
-export const getMe = async(req,res)=>{
-   const user = req.user
-   res.status(200).json({
-    message:'User fetched successfully!',
-    success:true,
-    user:{
-        id:user._id,
-        fullname:user.fullname,
-        email:user.email,
+        _id:user._id,
+        fullName:user.fullName,
         contact:user.contact,
-        role:user.role
+        email:user.email,
+        role:user.role,
+        token
+    })
+}
+
+export const register= async(req,res)=>{
+    const {fullName, email,password, contact,isSeller} = req.body
+    try{
+        const userExists = await userModel.findOne({
+            $or:[
+                {email},
+                {contact}
+            ]
+        })
+        if(userExists){
+            return res.status(400).json({
+                message:"User already exists with this email or contact number"
+            })
+        }
+
+        const user = await userModel.create({
+            fullName,
+            email,
+            password,
+            contact,
+            role:isSeller?'seller':'buyer'
+        })
+
+        await generateToken(user,res,'User registered successfully')
+    
+    }catch(err){
+        console.error(err)
+        res.status(500).json({
+            message:'Internal server error'
+        })
     }
-   })
-   
 }
