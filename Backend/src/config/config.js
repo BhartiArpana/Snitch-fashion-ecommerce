@@ -10,9 +10,17 @@ if(!process.env.MONGO_URI){
 if(!process.env.JWT_SECRET_KEY){
     throw new Error('JWT_SECRET_KEY is not defined in the environment variables`')
 }
+if(!process.env.CLIENT_ID){
+    throw new Error('CLIENT_ID is not defined in the environment variables`')
+}
+if(!process.env.CLIENT_SECRET){
+    throw new Error('CLIENT_SECRET is not defined in the environment variables`')
+}
 
 export const config = {
     PORT: process.env.PORT || 3000,
     MONGO_URI : process.env.MONGO_URI,
-    JWT_SECRET_KEY : process.env.JWT_SECRET_KEY
+    JWT_SECRET_KEY : process.env.JWT_SECRET_KEY,
+    CLIENT_ID : process.env.CLIENT_ID,
+    CLIENT_SECRET : process.env.CLIENT_SECRET
 }

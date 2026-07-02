@@ -7,16 +7,15 @@
 
 // ----- Container -------------------------------------------------
 .login-container {
-    height: 100vh;
-    width: 100vw;
+    min-height: 100vh;
+    width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 3rem 1.25rem;
+    align-items: flex-start;
+    padding: 5rem 1.25rem 3rem;
     background-color: var(--bg-color);
     position: relative;
     transition: background-color var(--transition-speed);
-    overflow: hidden;
     box-sizing: border-box;
 }
 
@@ -261,16 +260,14 @@
 // Large mobile  ≤ 37.5rem (600px equivalent)
 @media (max-width: 37.5rem) {
     .login-container {
-        align-items: flex-start;
-        padding-top: 5rem;
+        padding-top: 4rem;
     }
 }
 
 // Mobile  ≤ 30rem (480px equivalent)
 @media (max-width: 30rem) {
     .login-container {
-        padding: 0.9375rem;
-        align-items: center;
+        padding: 4.5rem 0.9375rem 2rem;
     }
 
     .theme-toggle {
