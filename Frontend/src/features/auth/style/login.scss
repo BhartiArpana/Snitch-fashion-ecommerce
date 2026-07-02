@@ -1,0 +1,311 @@
+// ============================================================
+//  Login Page — SCSS
+//  Mirrors register.scss design.
+//  Theme variables resolved from App.scss (:root / .theme-dark)
+//  Layout units: rem and % only (no px)
+// ============================================================
+
+// ----- Container -------------------------------------------------
+.login-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 1.25rem;
+    background-color: var(--bg-color);
+    position: relative;
+    transition: background-color var(--transition-speed);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+// ----- Theme toggle button (top-right) ---------------------------
+.theme-toggle {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    cursor: pointer;
+    padding: 0.625rem 1.25rem;
+    border-radius: 1.875rem;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    user-select: none;
+    font-size: 0.9rem;
+    transition: all var(--transition-speed);
+    border: 0.0625rem solid var(--border-color);
+    z-index: 10;
+
+    &:hover {
+        transform: translateY(-0.125rem);
+    }
+}
+
+// ----- Card ------------------------------------------------------
+.login-card {
+    width: 100%;
+    max-width: 31.25rem;
+    background-color: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow);
+    text-align: left;
+    border: 0.0625rem solid var(--border-color);
+    transition: all var(--transition-speed);
+
+    h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.375rem;
+        margin-top: 0;
+        color: var(--text-color);
+    }
+
+    .subtitle {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 1.75rem;
+        margin-top: 0;
+    }
+
+    // ----- Form ------------------------------------------------
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        text-align: left;
+
+        // ----- Field group ------------------------------------
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+
+            label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--text-color);
+                text-transform: uppercase;
+                letter-spacing: 0.0625rem;
+            }
+
+            // Wrapper holds icon + input + optional toggle btn
+            .input-wrapper {
+                position: relative;
+                display: flex;
+                align-items: center;
+
+                .input-icon {
+                    position: absolute;
+                    left: 0.875rem;
+                    display: flex;
+                    align-items: center;
+                    color: var(--text-muted);
+                    pointer-events: none;
+                    transition: color var(--transition-speed);
+
+                    svg {
+                        width: 1rem;
+                        height: 1rem;
+                    }
+                }
+
+                input[type="email"],
+                input[type="password"],
+                input[type="text"] {
+                    width: 100%;
+                    padding: 0.75rem 1rem 0.75rem 2.75rem;
+                    background-color: var(--input-bg);
+                    border: 0.0625rem solid transparent;
+                    border-radius: 0.375rem;
+                    color: var(--text-color);
+                    font-family: inherit;
+                    font-size: 0.875rem;
+                    transition:
+                        border-color var(--transition-speed),
+                        background-color var(--transition-speed),
+                        box-shadow var(--transition-speed);
+                    outline: none;
+                    box-sizing: border-box;
+
+                    &:focus {
+                        border-color: var(--primary-color);
+                        background-color: transparent;
+                        box-shadow: 0 0 0 0.125rem rgba(0, 0, 0, 0.05);
+
+                        // Light the icon on focus
+                        ~ .input-icon,
+                        &:focus ~ span.input-icon {
+                            color: var(--text-color);
+                        }
+                    }
+
+                    &::placeholder {
+                        color: var(--text-muted);
+                        opacity: 0.6;
+                    }
+                }
+
+                // When the field is focused, also highlight the icon
+                &:focus-within .input-icon {
+                    color: var(--text-color);
+                }
+
+                // Password visibility toggle button
+                .password-toggle {
+                    position: absolute;
+                    right: 0.875rem;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: var(--text-muted);
+                    display: flex;
+                    align-items: center;
+                    padding: 0;
+                    transition: color var(--transition-speed);
+
+                    svg {
+                        width: 1rem;
+                        height: 1rem;
+                    }
+
+                    &:hover {
+                        color: var(--text-color);
+                    }
+                }
+            }
+        }
+
+        // ----- Forgot password link ---------------------------
+        .forgot-password {
+            text-align: right;
+            margin-top: -0.5rem;
+
+            a {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                text-decoration: none;
+                font-weight: 500;
+                transition: color var(--transition-speed);
+
+                &:hover {
+                    color: var(--text-color);
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        // ----- Submit button ----------------------------------
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: var(--on-primary);
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.125rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            font-family: inherit;
+            transition: background-color var(--transition-speed), transform 0.1s;
+
+            &:hover {
+                background-color: var(--primary-color-hover);
+            }
+
+            &:active {
+                transform: scale(0.98);
+            }
+        }
+
+        // ----- Register prompt --------------------------------
+        .register-prompt {
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+
+            a {
+                color: var(--text-color);
+                font-weight: 600;
+                text-decoration: underline;
+
+                &:hover {
+                    color: var(--primary-color-hover);
+                }
+            }
+        }
+    }
+}
+
+// ============================================================
+//  Responsive Breakpoints  (rem-based, no px)
+// ============================================================
+
+// Tablet  ≤ 48rem (768px equivalent)
+@media (max-width: 48rem) {
+    .login-card {
+        padding: 2rem;
+
+        h2 {
+            font-size: 1.5rem;
+        }
+    }
+}
+
+// Large mobile  ≤ 37.5rem (600px equivalent)
+@media (max-width: 37.5rem) {
+    .login-container {
+        align-items: flex-start;
+        padding-top: 5rem;
+    }
+}
+
+// Mobile  ≤ 30rem (480px equivalent)
+@media (max-width: 30rem) {
+    .login-container {
+        padding: 0.9375rem;
+        align-items: center;
+    }
+
+    .theme-toggle {
+        top: 0.9375rem;
+        right: 0.9375rem;
+        padding: 0.5rem 0.9375rem;
+        font-size: 0.8rem;
+    }
+
+    .login-card {
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+
+        h2 {
+            font-size: 1.3rem;
+        }
+
+        .login-form {
+            gap: 1rem;
+
+            .form-group {
+                .input-wrapper {
+                    input[type="email"],
+                    input[type="password"],
+                    input[type="text"] {
+                        padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+                        font-size: 0.8rem;
+                    }
+                }
+            }
+
+            .submit-btn {
+                padding: 0.875rem;
+                font-size: 0.95rem;
+            }
+        }
+    }
+}
