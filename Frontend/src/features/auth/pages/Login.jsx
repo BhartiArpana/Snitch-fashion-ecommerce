@@ -4,6 +4,7 @@ import { toggleTheme } from '../../../app/theme.state.js';
 import '../style/login.scss';
 import { useNavigate } from 'react-router-dom';
 import {useAuth } from '../hook/useAuth'
+import GoogleLogin from '../components/GoogleLogin.jsx';
 
 function Login() {
   const dispatch = useDispatch();
@@ -44,6 +45,7 @@ function Login() {
         <p className="subtitle">Sign in to your account</p>
 
         <form onSubmit={handleSubmit} className="login-form">
+          <GoogleLogin />
           {/* Email */}
           <div className="form-group">
             <label htmlFor="email">Email Address</label>

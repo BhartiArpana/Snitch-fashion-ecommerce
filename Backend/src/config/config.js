@@ -22,5 +22,6 @@ export const config = {
     MONGO_URI : process.env.MONGO_URI,
     JWT_SECRET_KEY : process.env.JWT_SECRET_KEY,
     CLIENT_ID : process.env.CLIENT_ID,
-    CLIENT_SECRET : process.env.CLIENT_SECRET
+    CLIENT_SECRET : process.env.CLIENT_SECRET,
+    NODE_ENV : process.env.NODE_ENV || 'development'
 }

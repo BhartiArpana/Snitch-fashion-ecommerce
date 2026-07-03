@@ -73,3 +73,24 @@ export const login = async(req,res)=>{
         console.log(err)
     }
 }
+
+export const googleCallback = async(req,res)=>{
+    // console.log(req.user)
+    const {displayName,emails,profileUrl, id} = req.user
+    const user = await userModel.findOne({email:emails[0].value})
+    if(!user){
+        user = await userModel.create({
+            fullName:displayName,
+            email:emails[0].value,
+            googleId:id,
+
+        })
+    }
+    const token = jwt.sign({
+        id:user._id
+    },config.JWT_SECRET_KEY,{expiresIn:'7d'})
+    res.cookie('token',token)
+
+    res.redirect(config.NODE_ENV? 'http://localhost:5173':'/')
+
+}
