@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken'
 
 const generateToken = (user,res,message)=>{
     const token = jwt.sign({
-        id:user._id
+        id:user._id,
+        role:user.role
     },config.JWT_SECRET_KEY,{expiresIn:'7d'})
      
     res.cookie('token',token)
