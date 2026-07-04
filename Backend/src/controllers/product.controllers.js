@@ -29,3 +29,14 @@ export const createproduct = async(req,res)=>{
     })
     
 }
+
+export const getSellerProduct = async(req,res)=>{
+    const user = req.user
+    const products = await productModel.find({seller:user._id})
+
+    res.status(200).json({
+        message:'products fetched successfully',
+        success:true,
+        products
+    })
+}
