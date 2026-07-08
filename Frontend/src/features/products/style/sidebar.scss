@@ -1,0 +1,212 @@
+// ============================================================
+//  Sidebar — SCSS
+//  Fixed on desktop/tablet (≥ 56.25rem), slide-in drawer below.
+//  Monochrome brand system — refined spacing & typography carry
+//  the design instead of color.
+//  No px — rem/% only. Uses global CSS variables.
+// ============================================================
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 16.5rem;
+    background-color: var(--card-bg);
+    border-right: 0.0625rem solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 40;
+    transition: transform var(--transition-speed), background-color var(--transition-speed), border-color var(--transition-speed);
+      button,
+    a {
+        font-family: inherit;
+    }
+    // ── Brand / logo ──────────────────────────────────────────
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.75rem 1.5rem;
+        border-bottom: 0.0625rem solid var(--border-color);
+        flex-shrink: 0;
+    }
+
+    &__brand-mark {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.625rem;
+        background-color: var(--primary-color);
+        color: var(--on-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+        letter-spacing: -0.02em;
+    }
+
+    &__brand-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-color);
+        letter-spacing: -0.02em;
+    }
+
+    &__close {
+        margin-left: auto;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 2.125rem;
+        height: 2.125rem;
+        border-radius: 0.5rem;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: background-color var(--transition-speed);
+
+        &:hover {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+    }
+
+    // ── Section label ─────────────────────────────────────────
+    &__section-label {
+        padding: 0 1.5rem;
+        margin: 1.5rem 0 0.75rem;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    // ── Nav links ─────────────────────────────────────────────
+    &__nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+        padding: 0 1rem;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.625rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: -0.005em;
+        transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
+
+        &:hover {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+
+        &--active {
+            background-color: var(--primary-color);
+            color: var(--on-primary);
+            box-shadow: var(--shadow);
+
+            &:hover {
+                background-color: var(--primary-color);
+                color: var(--on-primary);
+            }
+
+            .sidebar__link-icon {
+                color: var(--on-primary);
+            }
+        }
+    }
+
+    &__link-icon {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        color: inherit;
+        opacity: 0.85;
+    }
+
+    &__link-label {
+        white-space: nowrap;
+    }
+
+    // ── Footer / logout ───────────────────────────────────────
+    &__footer {
+        padding: 1.25rem 1rem;
+        border-top: 0.0625rem solid var(--border-color);
+        flex-shrink: 0;
+    }
+
+    &__logout {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.625rem;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        font-weight: 600;
+        font-family: inherit;
+        letter-spacing: -0.005em;
+        cursor: pointer;
+        transition: background-color 0.18s ease, color 0.18s ease;
+
+        &:hover {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+    }
+}
+
+// ============================================================
+//  Responsive: drawer mode below 56.25rem (900px) — tablet & mobile
+// ============================================================
+@media (max-width: 56.25rem) {
+    .sidebar {
+        width: 17.5rem;
+        transform: translateX(-100%);
+        box-shadow: 0 0 3rem rgba(0, 0, 0, 0.25);
+
+        &--open {
+            transform: translateX(0);
+        }
+
+        &__close {
+            display: flex;
+        }
+    }
+}
+
+@media (max-width: 36rem) {
+    .sidebar {
+        width: 85%;
+        max-width: 18rem;
+
+        &__brand {
+            padding: 1.5rem 1.25rem;
+        }
+
+        &__nav {
+            padding: 0 0.75rem;
+        }
+    }
+}

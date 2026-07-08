@@ -1,0 +1,65 @@
+// ============================================================
+//  DashboardOutlet — SCSS
+//  Layout shell: fixed sidebar (desktop/tablet) + drawer (mobile)
+//  No px — rem/% only. Uses global CSS variables.
+// ============================================================
+
+.dashboard-outlet {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    transition: background-color var(--transition-speed);
+    position: relative;
+
+    &__backdrop {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(0.125rem);
+        z-index: 30;
+        display: none;
+    }
+
+    &__main {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0; // prevents flex overflow with nested content
+        margin-left: 16.5rem; // matches .sidebar width on desktop/tablet
+        transition: margin-left var(--transition-speed);
+    }
+
+    &__content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem;
+    }
+}
+
+// ============================================================
+//  Responsive: sidebar becomes an overlay drawer below 56.25rem
+// ============================================================
+@media (max-width: 56.25rem) {
+    .dashboard-outlet {
+        &__backdrop {
+            display: block;
+        }
+
+        &__main {
+            margin-left: 0;
+        }
+
+        &__content {
+            padding: 1.5rem;
+        }
+    }
+}
+
+@media (max-width: 36rem) {
+    .dashboard-outlet {
+        &__content {
+            padding: 1.25rem 1rem;
+        }
+    }
+}
