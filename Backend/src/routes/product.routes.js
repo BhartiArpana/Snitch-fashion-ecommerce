@@ -1,6 +1,6 @@
 import Router from 'express'
 import {authMiddleware} from '../middlewares/auth.middleware.js'
-import {createproduct, getSellerProduct} from '../controllers/product.controllers.js'
+import {createproduct, getSellerProduct,getAllProducts} from '../controllers/product.controllers.js'
 import multer from 'multer'
 import { productValitor } from '../validator/product.validator.js'
 
@@ -22,5 +22,10 @@ router.post('/',authMiddleware,uplaod.array('images',7),productValitor,createpro
 // @description get all products by authenticate seller 
 // @access private
 router.get('/seller',authMiddleware,getSellerProduct)
+
+// @route /api/products
+// @description Get all products for client 
+// @access public
+router.get('/',getAllProducts)
 
 export default router

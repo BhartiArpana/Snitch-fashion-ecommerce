@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
+import SellerNavbar from '../components/SellerNavbar';
 import '../style/dashboardOutlet.scss';
 
 function DashboardOutlet() {
@@ -23,7 +23,7 @@ function DashboardOutlet() {
       )}
 
       <div className="dashboard-outlet__main">
-        <Navbar onMenuClick={toggleSidebar} />
+        <SellerNavbar onMenuClick={toggleSidebar} />
 
         <div className="dashboard-outlet__content">
           <Outlet />

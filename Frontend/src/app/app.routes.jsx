@@ -5,11 +5,19 @@ import CreateProduct from "../features/products/pages/CreateProduct";
 import SellerProducts from '../features/products/pages/SellerProducts'
 import DashboardOutlet from "../features/products/pages/DashbaordOutlet";
 import Protected from "../features/auth/components/Protected";
+import Home from "../features/products/pages/Home";
+import LandingPage from "../features/products/pages/LandingPage";
 
 export const routes = createBrowserRouter([
     {
         path:'/',
-        element:<h1>Hello world</h1>
+        element:<Home/>,
+        children: [
+            {
+                index: true,
+                element: <LandingPage />
+            }
+        ]
     },
     {
         path:'/register',

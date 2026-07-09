@@ -1,0 +1,125 @@
+// ============================================================
+//  Navbar — SCSS
+//  Sticky top bar inside the dashboard content area.
+//  No px — rem/% only. Uses global CSS variables.
+// ============================================================
+
+.navbar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    height: 4.5rem;
+    padding: 0 2rem;
+    background-color: var(--card-bg);
+    border-bottom: 0.0625rem solid var(--border-color);
+    z-index: 20;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+
+    &__menu-btn {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 0.5rem;
+        background: transparent;
+        border: none;
+        color: var(--text-color);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background-color var(--transition-speed);
+
+        &:hover {
+            background-color: var(--input-bg);
+        }
+    }
+
+    &__title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-left: auto;
+    }
+
+    &__theme-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.375rem;
+        height: 2.375rem;
+        border-radius: 50%;
+        background-color: var(--input-bg);
+        border: 0.0625rem solid var(--border-color);
+        color: var(--text-color);
+        cursor: pointer;
+        transition: background-color var(--transition-speed), border-color var(--transition-speed), transform 0.15s ease;
+
+        &:hover {
+            border-color: var(--primary-color);
+        }
+
+        &:active {
+            transform: scale(0.92);
+        }
+    }
+
+    &__avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.375rem;
+        height: 2.375rem;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: var(--on-primary);
+        border: none;
+        font-size: 0.875rem;
+        font-weight: 700;
+        cursor: pointer;
+        flex-shrink: 0;
+        letter-spacing: -0.02em;
+        transition: transform 0.15s ease;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
+}
+
+// ============================================================
+//  Responsive
+// ============================================================
+
+// tablet & mobile — show hamburger since sidebar becomes a drawer
+@media (max-width: 56.25rem) {
+    .navbar {
+        padding: 0 1.5rem;
+
+        &__menu-btn {
+            display: flex;
+        }
+    }
+}
+
+// small mobile — tighten spacing, hide title to save room
+@media (max-width: 36rem) {
+    .navbar {
+        padding: 0 1rem;
+        gap: 0.75rem;
+        height: 4rem;
+
+        &__title {
+            display: none;
+        }
+    }
+}
