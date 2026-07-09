@@ -11,6 +11,8 @@ function Login() {
   const themeMode = useSelector((state) => state.theme.mode);
   const navigate = useNavigate();
   const {handleLogin} = useAuth()
+  
+  
 
   const [formData, setFormData] = useState({
     email: '',
@@ -27,11 +29,19 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // TODO: wire up handleLogin from useAuth when API is ready
-    await handleLogin({
+    const user = await handleLogin({
         email:formData.email,
         password:formData.password
     })
-    navigate('/');
+
+    console.log('user ',user.role);
+    
+    if(user?.role == 'seller'){
+       navigate('/seller/products')
+    }
+    else if(user?.role =='buyer'){
+      navigate('/');
+    }
   };
 
   return (

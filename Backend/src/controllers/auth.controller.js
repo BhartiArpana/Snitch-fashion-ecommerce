@@ -11,11 +11,7 @@ const generateToken = (user,res,message)=>{
     res.cookie('token',token)
     res.status(200).json({
         message,
-        _id:user._id,
-        fullName:user.fullName,
-        contact:user.contact,
-        email:user.email,
-        role:user.role,
+        user,
         token
     })
 }
@@ -94,4 +90,13 @@ export const googleCallback = async(req,res)=>{
 
     res.redirect(config.NODE_ENV? 'http://localhost:5173':'/')
 
+}
+
+export const getme = async(req,res)=>{
+    const user = req.user
+    res.status(200).json({
+        message:'User ',
+        success:true,
+        user
+    })
 }

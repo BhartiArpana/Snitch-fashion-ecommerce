@@ -4,6 +4,7 @@ import Login from "../features/auth/pages/Login";
 import CreateProduct from "../features/products/pages/CreateProduct";
 import SellerProducts from '../features/products/pages/SellerProducts'
 import DashboardOutlet from "../features/products/pages/DashbaordOutlet";
+import Protected from "../features/auth/components/Protected";
 
 export const routes = createBrowserRouter([
     {
@@ -19,8 +20,10 @@ export const routes = createBrowserRouter([
         element:<Login />
     },
     {
-        path:'seller',
-        element:<DashboardOutlet />,
+        path:'/seller',
+        element:<Protected role='seller'>
+                  <DashboardOutlet />
+                </Protected>,
         children:[
             {
                  path:'create-product',

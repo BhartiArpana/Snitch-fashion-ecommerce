@@ -34,3 +34,26 @@ export const authMiddleware = async(req,res,next)=>{
     }
 
 }
+
+export const authenticateUser = async(req,res,next)=>{
+    const token = req.cookies.token
+    if(!token){
+        return res.status(401).json({
+            message:'Token not provided'
+        })
+    }
+    try{
+        const dcecoded = jwt.verify(token,config.JWT_SECRET_KEY)
+        const user = await userModel.findById(dcecoded.id)
+        if(!user){
+            return res.status(401).json({
+                message:'unauthorized'
+            })
+        }
+        req.user = user
+        next()
+    }catch(err){
+        console.log(err);
+        
+    }
+}
