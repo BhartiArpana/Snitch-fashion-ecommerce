@@ -7,6 +7,7 @@ import DashboardOutlet from "../features/products/pages/DashbaordOutlet";
 import Protected from "../features/auth/components/Protected";
 import Home from "../features/products/pages/Home";
 import LandingPage from "../features/products/pages/LandingPage";
+import CardDetails from "../features/products/components/CardDetails";
 
 export const routes = createBrowserRouter([
     {
@@ -16,6 +17,10 @@ export const routes = createBrowserRouter([
             {
                 index: true,
                 element: <LandingPage />
+            },
+            {
+                path:'/products/:id',
+                element:<CardDetails />
             }
         ]
     },

@@ -2,15 +2,29 @@ import { useEffect } from 'react';
 import { useProduct } from '../hook/useProduct';
 import { useSelector } from 'react-redux';
 import '../style/landingPage.scss';
+import { useNavigate } from 'react-router-dom';
 
 function LandingPage() {
   const { handleAllProducts } = useProduct();
   const products = useSelector((state) => state.products.products) || [];
   const isLoading = useSelector((state) => state.products.loading);
+  const user = useSelector(state=>state.auth.user)
+  const navigate = useNavigate()
 
   useEffect(() => {
     handleAllProducts();
   }, []);
+
+  function handleAddToCard(){
+    if(!user){
+        navigate('/login')
+    }
+    
+  }
+
+  function handleDetailsCard(id){
+    navigate(`/products/${id}`)
+  }
 
   return (
     <div className="landing-page">
@@ -71,7 +85,7 @@ function LandingPage() {
             {products.map((product) => {
               const mainImage = product.images?.[0]?.url || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop';
               return (
-                <div className="landing-card" key={product._id}>
+                <div className="landing-card" key={product._id} onClick={()=>handleDetailsCard(product._id)}>
                   <div className="landing-card__media">
                     <img
                       src={mainImage}
@@ -80,7 +94,7 @@ function LandingPage() {
                       loading="lazy"
                     />
                     <div className="landing-card__overlay">
-                      <button className="landing-card__action-btn">
+                      <button className="landing-card__action-btn" onClick={handleAddToCard}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                           <line x1="3" y1="6" x2="21" y2="6" />

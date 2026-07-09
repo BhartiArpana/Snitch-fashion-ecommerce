@@ -33,3 +33,8 @@ export async function getAllProducts(){
   const response = await productApiInstance.get('/')
   return response.data
 }
+
+export async function getProductDetails(id){
+  const response = await productApiInstance.get(`/${id}`)
+  return response.data
+}

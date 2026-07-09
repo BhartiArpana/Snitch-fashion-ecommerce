@@ -1,0 +1,16 @@
+// Home Layout Stylesheet
+// Ensures child pages use the remaining viewport height after the sticky navbar.
+// Navbar height is defined as 4.5rem in navbar.scss
+
+.home-main {
+  min-height: calc(100vh - 4.5rem);
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+
+  @media (max-width: 48rem) {
+    padding: 1.5rem 1rem;
+  }
+}

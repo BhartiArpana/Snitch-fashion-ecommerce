@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../../../app/theme.state';
-import '../style/navbar.scss';
+import '../style/sellernavbar.scss';
 
 function SellerNavbar({ onMenuClick }) {
   const dispatch = useDispatch();

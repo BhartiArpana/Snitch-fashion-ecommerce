@@ -40,11 +40,28 @@ export const getSellerProduct = async(req,res)=>{
         products
     })
 }
+
 export const getAllProducts = async(req,res)=>{
     const products = await productModel.find()
     res.status(200).json({
         message:'Data fetched successfully',
         success:true,
         products
+    })
+}
+
+export const getProductDetails = async(req,res)=>{
+    const {productId} = req.params
+
+    const product = await productModel.findOne({_id:productId})
+    if(!product){
+        res.status(404).json({
+            message:"product not found"
+        })
+    }
+    res.status(200).json({
+        message:"product fetched successsfully",
+        success:true,
+        product
     })
 }

@@ -115,7 +115,7 @@ function CreateProduct() {
             setImages([]);
             setTimeout(() => setSuccess(false), 3500);
         }
-        navigate('/')
+        navigate('/seller/products')
     };
 
     return (
