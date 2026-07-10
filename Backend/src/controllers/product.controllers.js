@@ -65,3 +65,56 @@ export const getProductDetails = async(req,res)=>{
         product
     })
 }
+
+export const addProductVariants=async(req,res)=>{
+    let {productId} = req.params
+    const userId = req.user._id
+    const product = await productModel.findOne({
+        _id:productId,
+        seller:userId
+    })
+
+    if(!product){
+       return res.status(404).json({
+            message:'Product not found'
+        })
+    }
+
+    const files = req.files
+    const images=[]
+    if(files && files.length !==0){
+        (await Promise.all(files.map(async(file)=>{
+             const image = await uploadFile(
+            file.buffer,
+            file.originalname
+        )
+            return image
+        }))).map(image=>images.push(image))
+    }
+
+    const stock = req.body.stock
+    const price = req.body.priceAmount
+    const additional_info = req.body.additional_info
+    const attributes=JSON.parse(req.body.attributes || '{}')
+
+    product.variants.push({
+        image:images,
+        price:{
+            amount:price,
+            currency:req.body.priceCurrency || product.price.currency
+        },
+        attributes,
+        stock,
+        additional_info
+    })
+
+    await product.save()
+    res.status(200).json({
+        message:"Variants added successfully",
+        success:true,
+        product 
+    })
+    
+    
+    
+}

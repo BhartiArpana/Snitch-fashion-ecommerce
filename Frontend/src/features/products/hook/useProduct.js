@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import {createProduct,getSellerProducts,getAllProducts,getProductDetails} from '../services/product.api'
+import {createProduct,getSellerProducts,getAllProducts,getProductDetails,addProductVariants} from '../services/product.api'
 import {setError,setLoading,setSellerProducts,setProducts,setProductDetails} from '../state/product.slice'
 
 export const useProduct = ()=>{
@@ -58,7 +58,19 @@ export const useProduct = ()=>{
         }
     }
 
+    const handleAddProductVariants = async({id,variantPayload})=>{
+        try{
+            dispatch(setLoading(true))
+            const data = await addProductVariants({id,variantPayload})
+            return data
+        }catch(err){
+            dispatch(setError(err))
+        }finally{
+            dispatch(setLoading(false))
+        }
+    }
+
     return {handleCreateProduct,handleGetSellerProducts,handleAllProducts,
-        handleGetProductDetails
+        handleGetProductDetails,handleAddProductVariants
     }
 }

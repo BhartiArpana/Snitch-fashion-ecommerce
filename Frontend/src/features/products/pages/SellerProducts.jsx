@@ -17,6 +17,10 @@ function SellerProducts() {
     navigate('/seller/create-product')
   }
 
+  function handleProductDetails(id){
+    navigate(`/seller/products/${id}`)
+  }
+
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
@@ -46,7 +50,7 @@ function SellerProducts() {
             const inStock = hasStock ? product.stock > 0 : true;
 
             return (
-              <div className="product-card" key={product._id}>
+              <div className="product-card" key={product._id} onClick={()=>handleProductDetails(product._id)}>
                 <div className="product-card__image-wrap">
                   <img
                     src={product.images?.[0]?.url || '/placeholder.png'}
