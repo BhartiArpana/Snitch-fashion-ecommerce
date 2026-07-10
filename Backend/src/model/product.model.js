@@ -62,11 +62,12 @@ const productSchema = new mongoose.Schema(
             default: "INR",
           },
         },
-        additional_info:{
-            type:String
-        }
+        
       },
     ],
+    additional_info:{
+            type:String
+    }
   },
   { timestamps: true },
 );

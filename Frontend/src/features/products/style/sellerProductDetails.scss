@@ -1,29 +1,45 @@
 // ============================================================
-//  Seller Product Details Page — SCSS
+//  Seller Product Details — SCSS
 //  No px — rem/% only. Uses global CSS variables from App.scss.
-//  Rendered inside DashboardOutlet (Sidebar + Navbar already
-//  own the surrounding height/width) — no vh, no fixed
-//  page-level height.
+//  Matches Sidebar/Navbar/SellerProducts design system.
 // ============================================================
 
 .product-details-page {
     width: 100%;
     color: var(--text-color);
     font-family: var(--font-family);
+    padding-bottom: 3rem;
 
     button,
-    a,
-    input,
-    select,
-    textarea {
+    a {
         font-family: inherit;
     }
+}
 
-    &__loading {
-        padding: 3rem 0;
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 0.9rem;
+// ── Loading state ────────────────────────────────────────────
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem;
+    padding: 6rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+
+    &__spinner {
+        width: 1.75rem;
+        height: 1.75rem;
+        border: 0.1875rem solid var(--border-color);
+        border-top-color: var(--primary-color);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 
@@ -31,8 +47,9 @@
 .product-details-header {
     display: flex;
     align-items: center;
-    gap: 0.875rem;
-    margin-bottom: 1.25rem;
+    gap: 0.9rem;
+    margin-bottom: 1.75rem;
+    position: relative;
 
     &__eyebrow {
         font-size: 0.7rem;
@@ -40,30 +57,35 @@
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: var(--text-muted);
+        margin: 0 0 0.2rem;
+    }
+
+    &__title {
+        font-size: 1.375rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
         margin: 0;
+        line-height: 1.25;
     }
 }
 
 .back-btn {
-    flex-shrink: 0;
-    width: 2.5rem;
-    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
     border-radius: 50%;
     border: 0.0625rem solid var(--border-color);
     background-color: var(--card-bg);
     color: var(--text-color);
     cursor: pointer;
-    transition: background-color var(--transition-speed), border-color var(--transition-speed), transform 0.1s;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), transform 0.15s;
 
     &:hover {
         background-color: var(--input-bg);
-    }
-
-    &:active {
-        transform: scale(0.95);
+        transform: translateX(-0.125rem);
     }
 }
 
@@ -73,7 +95,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.85rem 1.4rem;
+    padding: 0.75rem 1.4rem;
     background-color: var(--primary-color);
     color: var(--on-primary);
     border: none;
@@ -83,8 +105,9 @@
     letter-spacing: -0.005em;
     cursor: pointer;
     flex-shrink: 0;
-    white-space: nowrap;
-    transition: background-color var(--transition-speed), transform 0.1s;
+     position: absolute;
+    right: 2rem;
+    transition: background-color var(--transition-speed), transform 0.1s, opacity 0.15s;
 
     &:hover {
         background-color: var(--primary-color-hover);
@@ -93,10 +116,20 @@
     &:active {
         transform: scale(0.97);
     }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
 }
 
 .btn-secondary {
-    padding: 0.85rem 1.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.4rem;
     background-color: transparent;
     color: var(--text-color);
     border: 0.0625rem solid var(--border-color);
@@ -111,8 +144,269 @@
     }
 }
 
-// ── Empty state ───────────────────────────────────────────────
+// ── Image fallback (used when no url present) ──────────────────
+.img-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background-color: var(--input-bg);
+}
+
+// ============================================================
+//  Product Gallery
+// ============================================================
+.product-gallery {
+    display: grid;
+    grid-template-columns: 5rem 1fr 24rem;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+
+    &__thumbs {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-height: 34rem;
+        overflow-y: auto;
+    }
+
+    &__thumb {
+        position: relative;
+    width: 100%;
+    padding-top: 100%;
+    border-radius: 0.625rem;
+    overflow: hidden;
+    border: 0.0625rem solid var(--border-color);
+    background-color: var(--input-bg);
+    cursor: pointer;
+    /* padding: 0;  ← ye line delete kardo */
+    flex-shrink: 0;
+    transition: border-color var(--transition-speed);
+        img,
+        .img-fallback {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        &.is-active {
+            border-color: var(--primary-color);
+            border-width: 0.125rem;
+        }
+
+        &:hover {
+            border-color: var(--text-muted);
+        }
+    }
+
+    &__main {
+        position: relative;
+        border-radius: 0.875rem;
+        overflow: hidden;
+        background-color: var(--input-bg);
+        border: 0.0625rem solid var(--border-color);
+        aspect-ratio: 3 / 4;
+
+        img,
+        .img-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        padding-top: 0.25rem;
+    }
+
+    &__price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    &__desc {
+        position: relative;
+        max-height: 9.5rem;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 1.6rem;
+            left: 0;
+            right: 0;
+            height: 2.5rem;
+            background: linear-gradient(to bottom, transparent, var(--bg-color));
+            pointer-events: none;
+        }
+
+        &.is-expanded {
+            max-height: 62.5rem;
+
+            &::after {
+                display: none;
+            }
+        }
+    }
+
+    &__stats {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        border-top: 0.0625rem solid var(--border-color);
+        border-bottom: 0.0625rem solid var(--border-color);
+    }
+
+    &__stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    &__stat-value {
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    &__stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__add-btn {
+        width: 100%;
+        padding: 0.9rem 1.4rem;
+    }
+}
+
+.text-toggle {
+    display: block;
+    margin-top: 0.4rem;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.2rem;
+    color: var(--text-color);
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+// ============================================================
+//  Structured info blocks (description + spec sheet)
+// ============================================================
+.info-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    &__heading {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin: 0.9rem 0 0.15rem;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    &__para {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--text-color);
+        margin: 0;
+    }
+
+    &__spec {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 0.0625rem dashed var(--border-color);
+        font-size: 0.8rem;
+
+        &:last-of-type {
+            border-bottom: none;
+        }
+    }
+
+    &__spec-label {
+        color: var(--text-muted);
+        flex-shrink: 0;
+    }
+
+    &__spec-value {
+        color: var(--text-color);
+        font-weight: 600;
+        text-align: right;
+    }
+
+    &__sku {
+        margin: 0.75rem 0 0;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        font-family: 'Courier New', monospace;
+        letter-spacing: 0.02em;
+
+        span {
+            font-family: var(--font-family);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-right: 0.4rem;
+        }
+    }
+}
+
+// ============================================================
+//  Variants section
+// ============================================================
+.variants-section {
+    margin-bottom: 3rem;
+
+    &__header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+
+    &__title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin: 0;
+    }
+
+    &__count {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+}
+
 .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
     width: 100%;
     padding: 3.5rem 1.5rem;
     text-align: center;
@@ -122,148 +416,10 @@
     border-radius: 0.875rem;
     font-size: 0.9rem;
     transition: background-color var(--transition-speed), border-color var(--transition-speed);
-}
 
-// ── Product gallery ───────────────────────────────────────────
-.product-gallery {
-    display: grid;
-    grid-template-columns: 5rem 1fr 22rem;
-    gap: 1.25rem;
-    margin-bottom: 2.5rem;
-
-    &__thumbs {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        max-height: 32rem;
-        overflow-y: auto;
-    }
-
-    &__thumb {
-        width: 5rem;
-        height: 5rem;
-        flex-shrink: 0;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        border: 0.125rem solid transparent;
-        background-color: var(--input-bg);
-        cursor: pointer;
-        padding: 0;
-        transition: border-color 0.15s ease;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        &.is-active {
-            border-color: var(--primary-color);
-        }
-
-        &:hover {
-            border-color: var(--text-muted);
-        }
-    }
-
-    &__main {
-        width: 100%;
-        aspect-ratio: 4 / 5;
-        max-height: 32rem;
-        border-radius: 0.875rem;
-        overflow: hidden;
-        background-color: var(--input-bg);
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-    }
-
-    &__info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-        padding-top: 0.25rem;
-    }
-
-    &__category {
-        align-self: flex-start;
-        font-size: 0.65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        color: var(--text-muted);
-    }
-
-    &__title {
-        font-size: 1.6rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--text-color);
+    p {
+        max-width: 22rem;
         margin: 0;
-        line-height: 1.25;
-    }
-
-    &__price {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: var(--text-color);
-        margin: 0.2rem 0 0;
-    }
-
-    &__description {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        line-height: 1.6;
-        margin: 0.4rem 0 0;
-    }
-
-    &__stats {
-        display: flex;
-        gap: 1.75rem;
-        margin: 1rem 0 0.25rem;
-        padding: 1rem 0;
-        border-top: 0.0625rem solid var(--border-color);
-        border-bottom: 0.0625rem solid var(--border-color);
-
-        div {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-    }
-
-    &__stats-value {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--text-color);
-    }
-
-    &__stats-label {
-        font-size: 0.7rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    &__add-btn {
-        margin-top: 0.5rem;
-        width: 100%;
-    }
-}
-
-// ── Variants section ─────────────────────────────────────────
-.variants-section {
-    &__title {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--text-color);
-        margin: 0 0 1rem;
-        letter-spacing: -0.01em;
     }
 }
 
@@ -271,18 +427,15 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
-    width: 100%;
 }
 
-// ── Variant card ──────────────────────────────────────────────
 .variant-card {
     background-color: var(--card-bg);
     border: 0.0625rem solid var(--border-color);
     border-radius: 0.875rem;
     overflow: hidden;
     box-shadow: var(--shadow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease,
-        background-color var(--transition-speed), border-color var(--transition-speed);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color var(--transition-speed), border-color var(--transition-speed);
 
     &:hover {
         transform: translateY(-0.1875rem);
@@ -297,12 +450,13 @@
     &__image-wrap {
         position: relative;
         width: 100%;
-        padding-top: 100%;
+        padding-top: 115%;
         background-color: var(--input-bg);
         overflow: hidden;
     }
 
-    &__image {
+    &__image,
+    .img-fallback {
         position: absolute;
         inset: 0;
         width: 100%;
@@ -313,10 +467,10 @@
     &__stock {
         position: absolute;
         top: 0.625rem;
-        right: 0.625rem;
+        left: 0.625rem;
         padding: 0.3rem 0.65rem;
         border-radius: 0.375rem;
-        font-size: 0.675rem;
+        font-size: 0.65rem;
         font-weight: 700;
         letter-spacing: 0.02em;
         backdrop-filter: blur(0.25rem);
@@ -327,6 +481,16 @@
 
             .theme-dark & {
                 color: #34c777;
+                background-color: rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        &.low-stock {
+            color: #b7791f;
+            background-color: rgba(255, 255, 255, 0.9);
+
+            .theme-dark & {
+                color: #f0b429;
                 background-color: rgba(0, 0, 0, 0.6);
             }
         }
@@ -344,7 +508,7 @@
 
     &__edit-btn {
         position: absolute;
-        bottom: 0.625rem;
+        top: 0.625rem;
         right: 0.625rem;
         width: 2rem;
         height: 2rem;
@@ -359,7 +523,7 @@
         opacity: 0;
         transform: translateY(0.375rem);
         box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
-        transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.15s ease;
+        transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.2s ease;
 
         &:hover {
             transform: scale(1.1);
@@ -371,33 +535,26 @@
         }
     }
 
-    &__thumbs {
+    &__dots {
         display: flex;
+        justify-content: center;
         gap: 0.35rem;
-        padding: 0.5rem 0.75rem 0;
-        overflow-x: auto;
+        padding: 0.6rem 0 0;
     }
 
-    &__thumb {
-        width: 2rem;
-        height: 2rem;
-        flex-shrink: 0;
-        border-radius: 0.3rem;
-        overflow: hidden;
-        border: 0.09375rem solid transparent;
+    &__dot {
+        width: 0.375rem;
+        height: 0.375rem;
+        border-radius: 50%;
+        border: none;
         padding: 0;
+        background-color: var(--border-color);
         cursor: pointer;
-        background-color: var(--input-bg);
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        transition: background-color 0.15s ease, transform 0.15s ease;
 
         &.is-active {
-            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            transform: scale(1.3);
         }
     }
 
@@ -411,30 +568,39 @@
     &__price {
         font-size: 1rem;
         font-weight: 700;
-        color: var(--text-color);
         margin: 0;
     }
 
     &__attributes {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.35rem;
+        gap: 0.4rem;
     }
 
     &__chip {
-        font-size: 0.7rem;
-        font-weight: 600;
-        padding: 0.2rem 0.55rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.55rem;
         border-radius: 0.375rem;
         background-color: var(--input-bg);
-        color: var(--text-muted);
         border: 0.0625rem solid var(--border-color);
+        font-size: 0.7rem;
+        color: var(--text-color);
     }
 
-    &__info {
+    &__chip-key {
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.6rem;
+        letter-spacing: 0.03em;
+    }
+
+    &__note {
         font-size: 0.75rem;
         color: var(--text-muted);
-        line-height: 1.45;
+        line-height: 1.5;
         margin: 0;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -443,130 +609,190 @@
     }
 }
 
-// ── Add/edit variant slide-over panel ────────────────────────
+// ============================================================
+//  Product spec sheet (additional_info)
+// ============================================================
+.product-specs {
+    background-color: var(--card-bg);
+    border: 0.0625rem solid var(--border-color);
+    border-radius: 0.875rem;
+    padding: 1.75rem;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+
+    &__header {
+        margin-bottom: 1.1rem;
+        padding-bottom: 1.1rem;
+        border-bottom: 0.0625rem solid var(--border-color);
+    }
+
+    &__title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin: 0;
+    }
+
+    &__body {
+        max-width: 34rem;
+    }
+}
+
+// ============================================================
+//  Variant add/edit drawer
+// ============================================================
 .variant-panel__backdrop {
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(0.125rem);
     z-index: 40;
-    animation: fade-in var(--transition-speed) ease;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
 }
 
 .variant-panel {
     position: fixed;
     top: 0;
     right: 0;
-    height: 100%;
-    width: 28rem;
+    bottom: 0;
+    width: 26rem;
     max-width: 92%;
     background-color: var(--card-bg);
     border-left: 0.0625rem solid var(--border-color);
     box-shadow: -0.5rem 0 2rem rgba(0, 0, 0, 0.15);
-    z-index: 41;
+    z-index: 50;
     display: flex;
     flex-direction: column;
-    animation: slide-in 0.3s ease;
+    animation: slideIn 0.28s ease;
     transition: background-color var(--transition-speed), border-color var(--transition-speed);
 
     &__header {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        padding: 1.25rem 1.5rem;
+        gap: 1rem;
+        padding: 1.5rem 1.5rem 1.1rem;
         border-bottom: 0.0625rem solid var(--border-color);
-        flex-shrink: 0;
 
         h2 {
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--text-color);
+            letter-spacing: -0.01em;
+            margin: 0;
         }
+    }
+
+    &__eyebrow {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin: 0 0 0.2rem;
     }
 
     &__close {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--input-bg);
+        width: 2.1rem;
+        height: 2.1rem;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 0.0625rem solid var(--border-color);
+        background-color: transparent;
         color: var(--text-color);
-        border: none;
         cursor: pointer;
-        transition: background-color 0.15s ease;
+        transition: background-color var(--transition-speed);
 
         &:hover {
-            background-color: var(--border-color);
+            background-color: var(--input-bg);
         }
     }
 }
 
-@keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slide-in {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
-}
-
-// ── Variant form ──────────────────────────────────────────────
 .variant-form {
     flex: 1;
     overflow-y: auto;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.375rem;
-
-    label {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
-    }
-
-    input,
-    select,
-    textarea {
-        width: 100%;
-        padding: 0.7rem 0.85rem;
-        background-color: var(--input-bg);
-        border: 0.0625rem solid var(--border-color);
-        border-radius: 0.5rem;
-        color: var(--text-color);
-        font-size: 0.85rem;
-        transition: border-color var(--transition-speed), background-color var(--transition-speed);
-
-        &:focus {
-            outline: none;
-            border-color: var(--input-focus-border);
-        }
-    }
-
-    textarea {
-        resize: vertical;
-        min-height: 4.5rem;
-    }
+    gap: 1.5rem;
 
     &__group {
-        &--split {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        input[type='text'],
+        input[type='number'],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.7rem 0.85rem;
+            border-radius: 0.5rem;
+            border: 0.0625rem solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.85rem;
+            font-family: inherit;
+            transition: border-color var(--transition-speed), background-color var(--transition-speed);
+
+            &:focus {
+                outline: none;
+                border-color: var(--input-focus-border);
+            }
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 4.5rem;
         }
     }
 
-    &__row {
+    &__group--split {
+        flex-direction: row;
+        gap: 1rem;
+
+        > div {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+
+    &__row--attr {
         display: flex;
-        align-items: center;
         gap: 0.5rem;
-        margin-bottom: 0.6rem;
+        align-items: center;
 
         input {
             flex: 1;
@@ -574,127 +800,138 @@
     }
 
     &__remove-btn {
+        width: 2rem;
+        height: 2rem;
         flex-shrink: 0;
-        width: 1.9rem;
-        height: 1.9rem;
-        border-radius: 50%;
+        border-radius: 0.5rem;
         border: 0.0625rem solid var(--border-color);
         background-color: transparent;
         color: var(--text-muted);
-        font-size: 1.1rem;
+        font-size: 1rem;
         line-height: 1;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.15s ease, color 0.15s ease;
+        transition: background-color var(--transition-speed), color var(--transition-speed);
 
         &:hover {
-            background-color: #e53e3e;
-            border-color: #e53e3e;
-            color: #fff;
+            background-color: var(--input-bg);
+            color: var(--text-color);
         }
     }
 
     &__add-btn {
+        align-self: flex-start;
         background: none;
         border: none;
-        color: var(--text-color);
-        font-size: 0.8rem;
-        font-weight: 700;
-        cursor: pointer;
         padding: 0.3rem 0;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text-color);
         text-decoration: underline;
         text-underline-offset: 0.2rem;
+        cursor: pointer;
     }
 
     &__actions {
         display: flex;
         gap: 0.75rem;
-        margin-top: 0.5rem;
-        padding-top: 1.25rem;
-        border-top: 0.0625rem solid var(--border-color);
+        margin-top: auto;
+        padding-top: 0.5rem;
 
-        .btn-primary,
-        .btn-secondary {
+        .btn-secondary,
+        .btn-primary {
             flex: 1;
+            position: absolute;
+            right: 2rem;
         }
     }
 }
 
-// ── File upload dropzone ────────────────────────────────────
-.file-dropzone {
+// ── Stock stepper ────────────────────────────────────────────
+.stepper {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 1.5rem 1rem;
-    border: 0.125rem dashed var(--border-color);
-    border-radius: 0.625rem;
+    width: 8.5rem;
+    border: 0.0625rem solid var(--border-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
     background-color: var(--input-bg);
-    color: var(--text-muted);
-    cursor: pointer;
-    text-align: center;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
 
-    svg {
-        color: var(--text-muted);
-    }
-
-    span {
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-
-    &:hover {
-        border-color: var(--text-color);
+    &__btn {
+        width: 2.4rem;
+        height: 2.4rem;
+        flex-shrink: 0;
+        border: none;
+        background-color: transparent;
         color: var(--text-color);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color var(--transition-speed);
 
-        svg {
-            color: var(--text-color);
+        &:hover {
+            background-color: var(--border-color);
+        }
+    }
+
+    &__input {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        border: none !important;
+        background-color: transparent !important;
+        padding: 0.7rem 0 !important;
+
+        &:focus {
+            outline: none;
+        }
+
+        // hide native number spinners
+        -moz-appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
     }
 }
 
-// ── Image picker (existing images + new previews) ──────────
+// ── Image picker (existing reuse + new upload previews) ────────
 .image-picker {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
     gap: 0.6rem;
-    margin-top: 0.75rem;
-
-    &--previews {
-        margin-top: 0.85rem;
-    }
 
     &__tile {
         position: relative;
-        aspect-ratio: 1 / 1;
+        padding-top: 100%;
         border-radius: 0.5rem;
         overflow: hidden;
         border: 0.125rem solid var(--border-color);
-        padding: 0;
-        cursor: pointer;
         background-color: var(--input-bg);
-        transition: border-color 0.15s ease;
+        cursor: pointer;
+        transition: border-color 0.15s ease, opacity 0.15s ease;
 
         img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
         }
 
         &.is-selected {
             border-color: var(--primary-color);
         }
+
+        &:not(.is-selected):hover {
+            opacity: 0.75;
+        }
     }
 
     &__check {
         position: absolute;
-        top: 0.25rem;
-        right: 0.25rem;
+        top: 0.3rem;
+        right: 0.3rem;
         width: 1.15rem;
         height: 1.15rem;
         border-radius: 50%;
@@ -707,15 +944,15 @@
 
     &__remove {
         position: absolute;
-        top: 0.25rem;
-        right: 0.25rem;
-        width: 1.25rem;
-        height: 1.25rem;
+        top: 0.3rem;
+        right: 0.3rem;
+        width: 1.15rem;
+        height: 1.15rem;
         border-radius: 50%;
         border: none;
         background-color: rgba(0, 0, 0, 0.65);
         color: #fff;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         line-height: 1;
         cursor: pointer;
         display: flex;
@@ -724,70 +961,123 @@
     }
 }
 
+.file-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.5rem 1rem;
+    border: 0.125rem dashed var(--border-color);
+    border-radius: 0.625rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--transition-speed), background-color var(--transition-speed);
+
+    &:hover {
+        border-color: var(--text-muted);
+        background-color: var(--input-bg);
+    }
+}
+
 // ============================================================
 //  Responsive Breakpoints
 // ============================================================
 
-// ── Laptop ≤ 75rem (1200px) ────────────────────────────────
+// ── Laptop ≤ 75rem (1200px) — 3-col variant grid ──────────────
 @media (max-width: 75rem) {
-    .product-gallery {
-        grid-template-columns: 4.5rem 1fr 18rem;
-    }
-
     .variant-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .product-gallery {
+        grid-template-columns: 4.5rem 1fr 20rem;
+    }
 }
 
-// ── Tablet ≤ 56.25rem (900px) ──────────────────────────────
+// ── Tablet ≤ 56.25rem (900px) — stacked gallery, 2-col variants
 @media (max-width: 56.25rem) {
     .product-gallery {
-        grid-template-columns: 1fr;
+        grid-template-columns: 4.5rem 1fr;
+        grid-template-areas:
+            'thumbs main'
+            'info info';
 
         &__thumbs {
-            flex-direction: row;
-            max-height: none;
-            order: 2;
-        }
-
-        &__thumb {
-            width: 4rem;
-            height: 4rem;
+            grid-area: thumbs;
         }
 
         &__main {
-            order: 1;
-            aspect-ratio: 16 / 10;
-            max-height: none;
+            grid-area: main;
+            aspect-ratio: 1 / 1;
         }
 
         &__info {
-            order: 3;
+            grid-area: info;
+            padding-top: 0.5rem;
         }
     }
 
     .variant-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1.25rem;
     }
 
     .variant-panel {
         width: 24rem;
     }
-
-    .image-picker {
-        grid-template-columns: repeat(5, 1fr);
-    }
 }
 
 // ── Large mobile ≤ 36rem (576px) ──────────────────────────────
 @media (max-width: 36rem) {
-    .product-gallery__title {
-        font-size: 1.3rem;
+    .product-details-header {
+        gap: 0.7rem;
+        margin-bottom: 1.4rem;
+
+        &__title {
+            font-size: 1.1rem;
+        }
     }
 
-    .product-gallery__price {
-        font-size: 1.15rem;
+    .product-gallery {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            'main'
+            'thumbs'
+            'info';
+        gap: 1rem;
+
+        &__thumbs {
+            grid-area: thumbs;
+            flex-direction: row;
+            overflow-x: auto;
+            max-height: none;
+            width: 4.5rem;
+            flex-shrink: 0;
+        }
+
+        &__thumb {
+            width: 4.5rem;
+            flex-shrink: 0;
+        }
+
+        &__main {
+            grid-area: main;
+            aspect-ratio: 1 / 1;
+        }
+
+        &__info {
+            grid-area: info;
+        }
+
+        &__price {
+            font-size: 1.3rem;
+        }
+    }
+
+    .variants-section__title {
+        font-size: 1rem;
     }
 
     .variant-grid {
@@ -796,11 +1086,15 @@
     }
 
     .variant-card__body {
-        padding: 0.65rem 0.75rem 0.85rem;
+        padding: 0.6rem 0.75rem 0.85rem;
     }
 
-    .variant-form__group--split {
-        grid-template-columns: 1fr;
+    .variant-card__price {
+        font-size: 0.875rem;
+    }
+
+    .product-specs {
+        padding: 1.25rem;
     }
 
     .variant-panel {
@@ -808,8 +1102,8 @@
         max-width: 100%;
     }
 
-    .image-picker {
-        grid-template-columns: repeat(4, 1fr);
+    .variant-form__group--split {
+        flex-direction: column;
     }
 }
 
@@ -820,11 +1114,15 @@
         font-size: 0.85rem;
     }
 
-    .variant-form {
-        padding: 1.25rem 1rem;
+    .product-gallery__thumbs {
+        width: 3.75rem;
     }
 
-    .image-picker {
-        grid-template-columns: repeat(3, 1fr);
+    .product-gallery__thumb {
+        width: 3.75rem;
+    }
+
+    .variant-grid {
+        grid-template-columns: 1fr;
     }
 }

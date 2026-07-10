@@ -3,7 +3,7 @@ import productModel from '../model/product.model.js'
 import uploadFile from '../services/storage.services.js'
 
 export const createproduct = async(req,res)=>{
-    const {description,title,priceAmount,priceCurrency} = req.body
+    const {description,title,priceAmount,priceCurrency,additional_info} = req.body
     const seller  = req.user
     const images = await Promise.all(req.files.map(async(file)=>{
         return await uploadFile(
@@ -20,7 +20,8 @@ export const createproduct = async(req,res)=>{
             currency:priceCurrency || 'INR'
         },
         images,
-        seller:seller._id
+        seller:seller._id,
+        additional_info
     })
     res.status(201).json({
         message:'product created successfully',
@@ -94,7 +95,7 @@ export const addProductVariants=async(req,res)=>{
 
     const stock = req.body.stock
     const price = req.body.priceAmount
-    const additional_info = req.body.additional_info
+    
     const attributes=JSON.parse(req.body.attributes || '{}')
 
     product.variants.push({
@@ -105,7 +106,7 @@ export const addProductVariants=async(req,res)=>{
         },
         attributes,
         stock,
-        additional_info
+        
     })
 
     await product.save()
