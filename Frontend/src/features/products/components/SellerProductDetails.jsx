@@ -540,7 +540,7 @@ function SellerProductDetails() {
             </div>
 
             <form className="variant-form" onSubmit={handleSubmit}>
-              {existingImagePool.length > 0 && (
+              {/* {existingImagePool.length > 0 && (
                 <div className="variant-form__group">
                   <label>Reuse an existing image</label>
                   <div className="image-picker">
@@ -566,7 +566,7 @@ function SellerProductDetails() {
                     })}
                   </div>
                 </div>
-              )}
+              )} */}
 
               <div className="variant-form__group">
                 <label>Upload new images</label>
@@ -662,7 +662,7 @@ function SellerProductDetails() {
                 </button>
               </div>
 
-              <div className="variant-form__group">
+              {/* <div className="variant-form__group">
                 <label>Additional info</label>
                 <textarea
                   rows="3"
@@ -670,7 +670,7 @@ function SellerProductDetails() {
                   value={form.additionalInfo}
                   onChange={(e) => setForm((p) => ({ ...p, additionalInfo: e.target.value }))}
                 />
-              </div>
+              </div> */}
 
               <div className="variant-form__actions">
                 <button type="button" className="btn-secondary" onClick={closePanel}>

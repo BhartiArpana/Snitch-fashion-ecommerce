@@ -14,13 +14,18 @@ function CreateProduct() {
     const themeMode = useSelector((state) => state.theme.mode);
     const { loading } = useSelector((state) => state.products);
     const { handleCreateProduct } = useProduct();
+    
+   
 
     const [form, setForm] = useState({
         title: '',
         description: '',
         priceAmount: '',
         priceCurrency: 'INR',
+        stock:'',
+        attribut:[{key:'',value:''}]
     });
+    
 
     const [images, setImages] = useState([]);   // [{ file, preview }]
     const [isDragging, setIsDragging] = useState(false);
@@ -48,6 +53,11 @@ function CreateProduct() {
             return prev.filter((i) => i.id !== id);
         });
     };
+   
+
+
+
+
 
     // ── field change ─────────────────────────────────────────
     const handleChange = (e) => {
@@ -82,18 +92,43 @@ function CreateProduct() {
         dragCounter.current = 0;
         addFiles(e.dataTransfer.files);
     };
+    const handleAttributeChange = (idx, field, value) => {
+    setForm((prev) => ({
+        ...prev,
+        attribut: prev.attribut.map((attr, i) =>
+            i === idx ? { ...attr, [field]: value } : attr
+        ),
+    }));
+};
+
+const addAttributeRow = () => {
+    if (form.attribut.length >= 5) return;
+    setForm((prev) => ({
+        ...prev,
+        attribut: [...prev.attribut, { key: '', value: '' }],
+    }));
+};
+
+const removeAttributeRow = (idx) => {
+    setForm((prev) => ({
+        ...prev,
+        attribut: prev.attribut.filter((_, i) => i !== idx),
+    }));
+};
 
     // ── validation ───────────────────────────────────────────
     const validate = () => {
-        const errs = {};
-        if (!form.title.trim()) errs.title = 'Title is required.';
-        if (!form.description.trim()) errs.description = 'Description is required.';
-        if (!form.priceAmount || isNaN(form.priceAmount) || Number(form.price) <= 0)
-            errs.priceAmount = 'Enter a valid price.';
-        if (images.length === 0) errs.images = 'Add at least one image.';
-        setErrors(errs);
-        return Object.keys(errs).length === 0;
-    };
+    const errs = {};
+    if (!form.title.trim()) errs.title = 'Title is required.';
+    if (!form.description.trim()) errs.description = 'Description is required.';
+    if (!form.priceAmount || isNaN(form.priceAmount) || Number(form.priceAmount) <= 0)
+        errs.priceAmount = 'Enter a valid price.';
+    if (!form.stock || isNaN(form.stock) || Number(form.stock) < 0)
+        errs.stock = 'Enter a valid stock quantity.';
+    if (images.length === 0) errs.images = 'Add at least one image.';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+};
 
     // ── submit ───────────────────────────────────────────────
     const handleSubmit = async (e) => {
@@ -105,6 +140,14 @@ function CreateProduct() {
         formData.append('description', form.description.trim());
         formData.append('priceAmount', form.priceAmount);
         formData.append('priceCurrency', form.priceCurrency);
+        formData.append('stock', form.stock);
+         // form.attribut array ko object mein convert karo: [{key:'color',value:'red'}] → {color:'red'}
+    const attributObj = form.attribut.reduce((acc, { key, value }) => {
+        if (key.trim() && value.trim()) acc[key.trim()] = value.trim();
+        return acc;
+    }, {});
+    formData.append('attribut', JSON.stringify(attributObj));
+
         images.forEach(({ file }) => formData.append('images', file));
         // console.log('form ',formData);
         
@@ -177,6 +220,7 @@ function CreateProduct() {
                             />
                             {errors.title && <span className="cp-field__error">{errors.title}</span>}
                         </div>
+                        
 
                         {/* Description */}
                         <div className={`cp-field ${errors.description ? 'cp-field--error' : ''}`}>
@@ -229,24 +273,7 @@ function CreateProduct() {
                             {errors.priceAmount && <span className="cp-field__error">{errors.priceAmount}</span>}
                         </div>
 
-                        {/* Submit */}
-                        <button
-                            type="submit"
-                            className="cp-submit"
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <>
-                                    <span className="cp-submit__spinner" />
-                                    Creating…
-                                </>
-                            ) : (
-                                <>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                    Create Product
-                                </>
-                            )}
-                        </button>
+                       
                     </div>
 
                     {/* ── Right column — Images ── */}
@@ -325,7 +352,89 @@ function CreateProduct() {
 
                             {errors.images && <span className="cp-field__error">{errors.images}</span>}
                         </div>
+                        {/* Stock */}
+                        <div className={`cp-field ${errors.stock ? 'cp-field--error' : ''}`}>
+                            <label htmlFor="cp-stock" className="cp-field__label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.5 7.28a1 1 0 00-.5-.86l-8-4.62a1 1 0 00-1 0l-8 4.62a1 1 0 00-.5.86v9.44a1 1 0 00.5.86l8 4.62a1 1 0 001 0l8-4.62a1 1 0 00.5-.86z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+                                Stock Quantity
+                            </label>
+                            <input
+                                id="cp-stock"
+                                type="number"
+                                name="stock"
+                                value={form.stock}
+                                onChange={handleChange}
+                                placeholder="e.g. 25"
+                                className="cp-field__input"
+                                min="0"
+                            />
+                            {errors.stock && <span className="cp-field__error">{errors.stock}</span>}
+                        </div>
+
+                        {/* Attributes */}
+                        <div className="cp-field cp-field--attributes">
+                            <label className="cp-field__label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                Attributes (color, size, etc.)
+                            </label>
+
+                            <div className="cp-attributes">
+                                {form.attribut.map((attr, idx) => (
+                                    <div className="cp-attribute-row" key={idx}>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. color"
+                                            value={attr.key}
+                                            onChange={(e) => handleAttributeChange(idx, 'key', e.target.value)}
+                                            className="cp-attribute-row__key"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. navy blue"
+                                            value={attr.value}
+                                            onChange={(e) => handleAttributeChange(idx, 'value', e.target.value)}
+                                            className="cp-attribute-row__value"
+                                        />
+                                        {form.attribut.length > 1 && (
+                                            <button
+                                                type="button"
+                                                className="cp-attribute-row__remove"
+                                                onClick={() => removeAttributeRow(idx)}
+                                                aria-label="Remove attribute"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {form.attribut.length < 5 && (
+                                <button type="button" className="cp-attribute-add" onClick={addAttributeRow}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    Add attribute
+                                </button>
+                            )}
+                        </div>
                     </div>
+                     {/* Submit */}
+                        <button
+                            type="submit"
+                            className="cp-submit"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <span className="cp-submit__spinner" />
+                                    Creating…
+                                </>
+                            ) : (
+                                <>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    Create Product
+                                </>
+                            )}
+                        </button>
                 </form>
             </div>
         </div>

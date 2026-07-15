@@ -840,8 +840,9 @@
         .btn-secondary,
         .btn-primary {
             flex: 1;
-            position: absolute;
-            right: 2rem;
+              position: static;
+            // position: absolute;
+            // right: 2rem;
         }
     }
 }

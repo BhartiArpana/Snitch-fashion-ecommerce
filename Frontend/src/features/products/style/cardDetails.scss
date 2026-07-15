@@ -7,12 +7,12 @@
   gap: 1rem;
   width: 100%;
   font-family: var(--font-family);
-  // Fit exactly in the remaining viewport after navbar (4.5rem) + main padding (2rem top + 2rem bottom)
-  height: calc(100vh - 4.5rem - 4rem);
+  min-height: calc(100vh - 4.5rem - 4rem);
+  height: auto;
 
   // ── Breadcrumbs ──────────────────────────────────────────
   &__breadcrumbs {
-    flex-shrink: 0; // never compress the breadcrumb row
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -47,40 +47,43 @@
   }
 
   // ── Container Layout ──────────────────────────────────────
+  // THE MAIN FIX: minmax(0, ...) instead of plain fr — without this,
+  // the right column's content forces itself wider and steals space
+  // from the image column, making the image look small.
+ // ── Container Layout ──────────────────────────────────────
   &__container {
-    flex: 1;           // take all remaining height after breadcrumb
-    min-height: 0;     // critical: allow flex child to shrink below content size
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    display: flex;
     gap: 3rem;
-    align-items: stretch; // both columns fill the container height
+    align-items: start;
 
+    // Laptop (1024px and below)
     @media (max-width: 64rem) {
-      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2rem;
+    }
+
+    // Tablet (768px and below)
+    @media (max-width: 48rem) {
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    // Mobile (480px and below)
+    @media (max-width: 30rem) {
       gap: 1.5rem;
     }
-
-    @media (max-width: 48rem) {
-      grid-template-columns: 1fr;
-      height: auto;          // mobile: let content flow naturally with scroll
-      overflow-y: visible;
-    }
-  }
-
-  // Mobile: allow natural page scroll on small screens
-  @media (max-width: 48rem) {
-    height: auto;
-    min-height: calc(100vh - 4.5rem - 3rem);
   }
 }
 
 // ── Left Side: Gallery ─────────────────────────────────────
+// ── Left Side: Gallery ─────────────────────────────────────
 .product-gallery {
   display: flex;
   gap: 1rem;
-  width: 100%;
-  height: 100%;   // fill the grid row height
-  min-height: 0;  // allow shrinking in flex/grid context
+  flex: 1.2;
+  min-width: 0;
+  position: sticky;
+  top: 1rem;
+  align-self: start;
 
   &__thumbnails {
     display: flex;
@@ -88,7 +91,8 @@
     gap: 0.5rem;
     width: 5rem;
     flex-shrink: 0;
-    overflow-y: auto; // scroll when there are many thumbnails
+    max-height: 32rem;
+    overflow-y: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
     &::-webkit-scrollbar { display: none; }
@@ -96,7 +100,7 @@
     .thumbnail-btn {
       flex-shrink: 0;
       width: 100%;
-      height: 4.5rem; // fixed height — no aspect-ratio forcing overflow
+      aspect-ratio: 1 / 1;
       border: 0.0625rem solid var(--border-color);
       background-color: var(--input-bg);
       padding: 0;
@@ -124,7 +128,8 @@
 
   &__main {
     flex: 1;
-    min-height: 0;   // allow shrinking — critical for flex height-fill
+    min-width: 0;
+    aspect-ratio: 3 / 3.6;
     background-color: var(--input-bg);
     border-radius: 0.25rem;
     overflow: hidden;
@@ -142,53 +147,68 @@
     }
   }
 
+  // ── Laptop (1024px and below): same layout, tighter gap ──
+  @media (max-width: 64rem) {
+    gap: 0.75rem;
+
+    &__thumbnails {
+      width: 4.5rem;
+      max-height: 28rem;
+    }
+  }
+
+  // ── Tablet (768px and below): still side-by-side thumbs + image ──
   @media (max-width: 48rem) {
+    flex: 1 1 100%;
+    width: 100%;
+    flex-direction: row;
+    position: static; // no sticky once stacked layout begins
+
+    &__thumbnails {
+      width: 4rem;
+      max-height: 26rem;
+    }
+
+    &__main {
+      aspect-ratio: 3 / 3.4;
+    }
+  }
+
+  // ── Mobile (480px and below): stacked — image on top, thumbs as horizontal strip ──
+  @media (max-width: 30rem) {
     flex-direction: column-reverse;
-    height: auto;
 
     &__thumbnails {
       flex-direction: row;
       width: 100%;
-      height: auto;
+      max-height: none;
       overflow-x: auto;
       overflow-y: hidden;
       padding-bottom: 0.5rem;
 
       .thumbnail-btn {
         width: 4.5rem;
-        height: 4rem;
+        aspect-ratio: 1 / 1;
         flex-shrink: 0;
       }
     }
 
     &__main {
       width: 100%;
-      aspect-ratio: 3 / 2.8; // mobile: use aspect-ratio since height is auto
+      aspect-ratio: 3 / 2.8;
     }
   }
 }
 
 
 // ── Right Side: Product Information ────────────────────────
+// ── Right Side: Product Information ────────────────────────
 .product-info {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  height: 100%;        // fill the grid column height
-  min-height: 0;
-  overflow-y: auto;    // internal scroll — page itself never scrolls
-  padding-right: 0.5rem;
-  // subtle custom scrollbar
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-color) transparent;
-  &::-webkit-scrollbar { width: 0.25rem; }
-  &::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0.25rem; }
-
-  @media (max-width: 48rem) {
-    height: auto;
-    overflow-y: visible;
-    padding-right: 0;
-  }
+  flex: 0.8;
+  min-width: 0;
 
   &__category {
     font-size: 0.75rem;
@@ -206,10 +226,6 @@
     letter-spacing: -0.02rem;
     text-transform: uppercase;
     color: var(--text-color);
-
-    @media (max-width: 48rem) {
-      font-size: 1.6rem;
-    }
   }
 
   &__price-box {
@@ -227,7 +243,7 @@
   &__tax-label {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #27ae60; // Sleek green label
+    color: #27ae60;
     letter-spacing: 0.02rem;
   }
 
@@ -238,10 +254,43 @@
     margin: 0;
     opacity: 0.85;
   }
+
+  // ── Laptop (1024px and below) ──
+  @media (max-width: 64rem) {
+    gap: 1rem;
+
+    &__price {
+      font-size: 1.6rem;
+    }
+  }
+
+  // ── Tablet (768px and below): still side-by-side with gallery ──
+  @media (max-width: 48rem) {
+    flex: 1;
+    min-width: 0;
+
+    &__title {
+      font-size: 1.5rem;
+    }
+  }
+
+  // ── Mobile (480px and below): full width below the gallery ──
+  @media (max-width: 30rem) {
+    flex: 1 1 100%;
+    width: 100%;
+
+    &__title {
+      font-size: 1.35rem;
+    }
+
+    &__price {
+      font-size: 1.4rem;
+    }
+  }
 }
 
-// ── Product Selectors ─────────────────────────────────────
-.product-selector {
+// ── Variant Selector ────────────────────────────────────────
+.variant-selector {
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
@@ -259,85 +308,71 @@
     font-weight: 800;
     letter-spacing: 0.08rem;
     color: var(--text-color);
-  }
 
-  .size-chart-btn {
-    background: none;
-    border: none;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-decoration: underline;
-    cursor: pointer;
-    padding: 0;
-    
-    &:hover {
-      color: var(--text-color);
+    &__value {
+      font-weight: 600;
+      letter-spacing: normal;
+      text-transform: capitalize;
+      color: var(--text-muted);
     }
   }
 
-  .size-options {
+  &__options {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
   }
 
-  .size-btn {
-    min-width: 3.5rem;
-    height: 3.5rem;
+  .variant-swatch {
+    width: 4.25rem;
+    height: 4.25rem;
     border: 0.0625rem solid var(--border-color);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-size: 0.875rem;
-    font-weight: 700;
-    cursor: pointer;
     border-radius: 0.125rem;
-    transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed);
+    overflow: hidden;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+    background: var(--input-bg);
+    flex-shrink: 0;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &__label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      font-size: 0.625rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      text-align: center;
+      padding: 0.2rem 0.15rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     &:hover {
       border-color: var(--text-color);
     }
 
-    &.selected {
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
-      color: var(--on-primary);
+    &.active {
+      border-color: var(--text-color);
+      box-shadow: 0 0 0 0.0625rem var(--text-color);
     }
   }
 
-  // Quantity Counter style
-  .qty-control {
-    display: flex;
-    align-items: center;
-    border: 0.0625rem solid var(--border-color);
-    width: fit-content;
-    border-radius: 0.125rem;
-    overflow: hidden;
-
-    button {
-      background: none;
-      border: none;
-      color: var(--text-color);
-      width: 2.75rem;
-      height: 2.75rem;
-      font-size: 1.25rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background-color var(--transition-speed);
-
-      &:hover {
-        background-color: var(--input-bg);
-      }
-    }
-
-    span {
-      min-width: 2.75rem;
-      text-align: center;
-      font-size: 0.9375rem;
-      font-weight: 700;
-      color: var(--text-color);
+  @media (max-width: 30rem) {
+    .variant-swatch {
+      width: 3.75rem;
+      height: 3.75rem;
     }
   }
 }
@@ -420,7 +455,6 @@
   .wishlist-btn {
     flex-shrink: 0;
     width: 3.5rem;
-    height: 3.5rem;
     border: 0.0625rem solid var(--border-color);
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -429,9 +463,7 @@
     justify-content: center;
     cursor: pointer;
     border-radius: 0.125rem;
-    // Align with top of primary buttons
     align-self: flex-start;
-    // match height of 2 stacked buttons + gap
     height: calc(3.5rem * 2 + 0.75rem);
     transition: border-color var(--transition-speed), transform var(--transition-speed);
 
@@ -476,6 +508,146 @@
   }
 }
 
+// ── Additional Information (full width, below the main grid) ──
+.product-additional-info {
+  width: 100%;
+  border-top: 0.0625rem solid var(--border-color);
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.01rem;
+    text-transform: uppercase;
+    color: var(--text-color);
+    margin: 0 0 1.25rem;
+  }
+
+  &__body {
+    position: relative;
+    max-height: 10rem;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3rem;
+      background: linear-gradient(to bottom, transparent, var(--bg-color));
+      pointer-events: none;
+    }
+
+    &.is-expanded {
+      max-height: 62.5rem; // effectively "unlimited" so full content shows
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  &__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.04rem;
+    text-transform: uppercase;
+    color: var(--text-color);
+    cursor: pointer;
+
+    svg {
+      transition: transform 0.25s ease;
+
+      &.rotated {
+        transform: rotate(180deg);
+      }
+    }
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2rem;
+    }
+  }
+}
+
+// ── Structured info blocks (used inside additional info) ────
+.info-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 40rem;
+
+  &__heading {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08rem;
+    color: var(--text-muted);
+    margin: 1rem 0 0.15rem;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  &__para {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  &__spec {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 0.0625rem dashed var(--border-color);
+    font-size: 0.875rem;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+  }
+
+  &__spec-label {
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  &__spec-value {
+    color: var(--text-color);
+    font-weight: 600;
+    text-align: right;
+  }
+
+  &__sku {
+    margin: 0.75rem 0 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.02rem;
+
+    span {
+      font-family: var(--font-family);
+      font-weight: 700;
+      letter-spacing: 0.05rem;
+      margin-right: 0.4rem;
+    }
+  }
+}
+
 // ── Shimmer Loaders ────────────────────────────────────────
 .product-details-shimmer {
   display: flex;
@@ -491,7 +663,7 @@
 
   .shimmer-container {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
     gap: 3.5rem;
 
     @media (max-width: 48rem) {
@@ -512,7 +684,7 @@
       flex-shrink: 0;
 
       .shimmer-thumb {
-        aspect-ratio: 3 / 2.8;
+        aspect-ratio: 1 / 1;
         width: 100%;
         border-radius: 0.125rem;
       }
@@ -520,7 +692,7 @@
 
     .shimmer-main-image {
       flex-grow: 1;
-      aspect-ratio: 3 / 2.8;
+      aspect-ratio: 3 / 3.6;
       border-radius: 0.25rem;
     }
   }

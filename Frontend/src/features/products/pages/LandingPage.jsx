@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useProduct } from '../hook/useProduct';
 import { useSelector } from 'react-redux';
 import '../style/landingPage.scss';
@@ -10,7 +10,9 @@ function LandingPage() {
   const isLoading = useSelector((state) => state.products.loading);
   const user = useSelector(state=>state.auth.user)
   const navigate = useNavigate()
+  const [variantId,setVariantID] = useState(null)
 
+ 
   useEffect(() => {
     handleAllProducts();
   }, []);
