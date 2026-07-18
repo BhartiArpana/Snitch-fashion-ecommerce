@@ -48,7 +48,8 @@ export const addToCart = async (req, res) => {
 
     return res.status(200).json({
         message:"Cart update successfully",
-        success:true
+        success:true,
+        cart
     })
   }
   
@@ -68,14 +69,16 @@ export const addToCart = async (req, res) => {
 
   res.status(200).json({
     message:'Add to cart successfully',
-    success:true
+    success:true,
+    cart
   })
 
 };
 
 export const getCart = async(req,res)=>{
     let user = req.user
-    let cart = await cartModel.findOne({user:user._id}).populate('items.product')
+    let cart = await cartModel.findOne({user:user._id}).populate('items.product').populate('items.product')
+    .populate('items.variants');
 
     if(!cart){
         cart = await cartModel.create({

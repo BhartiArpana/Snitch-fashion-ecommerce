@@ -4,17 +4,31 @@ import { toggleTheme } from '../../../app/theme.state';
 import { setUser } from '../../auth/state/auth.slice';
 import { useState, useEffect, useRef } from 'react';
 import '../style/navbar.scss';
+import { useCart } from '../../cart/hook/useCart';
+import { useProduct } from '../hook/useProduct';
 
 function Navbar() {
+  const {handleSearchSuggestion} = useProduct()
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const themeMode = useSelector((state) => state.theme.mode);
   const user = useSelector((state) => state.auth.user);
+  const {handleGetCart} = useCart()
+  const items = useSelector(state=>state.cart.items)
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  useEffect(()=>{
+    handleGetCart()
+  },[])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -32,9 +46,38 @@ function Navbar() {
     };
   }, []);
 
+  // Debounced search suggestions
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      const data = await handleSearchSuggestion(searchQuery);
+      console.log('data ',data);
+      
+      setSuggestions(data?.suggestion || []);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      setShowSuggestions(false);
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleSuggestionClick = (title) => {
+    setSearchQuery(title);
+    setShowSuggestions(false);
+    navigate(`/search?q=${encodeURIComponent(title)}`);
+  };
+
   const handleLogout = () => {
     dispatch(setUser(null));
-    // Clear cookies if needed, or redirect
     setIsDropdownOpen(false);
     setIsMobileMenuOpen(false);
     navigate('/login');
@@ -45,10 +88,18 @@ function Navbar() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
   };
 
+  function handleCardClick(){
+     if(!user){
+      navigate('/login')
+     }
+     if(user){
+       navigate('/cart')
+     }
+  }
+
   return (
     <header className="navbar">
       <div className="navbar__container">
-        {/* Left Side: Logo & Menu Button */}
         <div className="navbar__left">
           <button
             className="navbar__toggle-btn"
@@ -74,17 +125,48 @@ function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Desktop Navigation Links (For premium aesthetic) */}
-        <nav className="navbar__nav-desktop">
-          <Link to="/" className="navbar__link">NEW ARRIVALS</Link>
-          <Link to="/" className="navbar__link">MOST WANTED</Link>
-          <Link to="/" className="navbar__link">CLOTHING</Link>
-          <Link to="/" className="navbar__link">TRENDING</Link>
-        </nav>
+        {/* Center: Search Bar */}
+        <div className="navbar__center">
+          <div className={`navbar__search-bar ${isSearchOpen ? 'navbar__search-bar--active' : ''}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search for products, brands and more"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => {
+                setIsSearchOpen(true);
+                setShowSuggestions(true);
+              }}
+              onBlur={() => setIsSearchOpen(false)}
+              onKeyDown={handleSearchKeyDown}
+              className="navbar__search-input"
+            />
+          </div>
+
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className="navbar__search-suggestions">
+              {suggestions.map((item) => (
+                <li
+                  key={item._id}
+                  className="navbar__search-suggestion-item"
+                  onMouseDown={() => handleSuggestionClick(item.title)}
+                >
+                  {item.title}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {/* Right Side: Theme, Cart, Login/User */}
         <div className="navbar__right">
-          {/* Theme Toggle */}
           <button
             className="navbar__icon-btn navbar__theme-toggle"
             onClick={() => dispatch(toggleTheme())}
@@ -110,15 +192,17 @@ function Navbar() {
             )}
           </button>
 
-          {/* Decorative Cart/Search Icons for real e-commerce store feel */}
-          <button className="navbar__icon-btn navbar__desktop-only" aria-label="Search">
+          <button className="navbar__icon-btn navbar__cart-btn" aria-label="Cart" onClick={() => handleCardClick()}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
+            {items?.items?.length > 0 && (
+              <span className="navbar__cart-badge">{items.items.length || 0}</span>
+            )}
           </button>
 
-          {/* User Auth Section */}
           {user ? (
             <div className="navbar__user-container" ref={dropdownRef}>
               <button
@@ -136,7 +220,6 @@ function Navbar() {
                 </svg>
               </button>
 
-              {/* Dropdown Menu */}
               {isDropdownOpen && (
                 <div className="navbar__dropdown">
                   <div className="navbar__dropdown-header">

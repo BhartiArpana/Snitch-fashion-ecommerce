@@ -9,6 +9,8 @@ import Home from "../features/products/pages/Home";
 import LandingPage from "../features/products/pages/LandingPage";
 import CardDetails from "../features/products/components/CardDetails";
 import SellerProductDetails from "../features/products/components/SellerProductDetails";
+import AddToCart from "../features/cart/pages/AddToCart";
+import SearchResult from "../features/products/pages/SearchResult";
 
 export const routes = createBrowserRouter([
     {
@@ -22,6 +24,14 @@ export const routes = createBrowserRouter([
             {
                 path:'/products/:id',
                 element:<CardDetails />
+            },
+            {
+                path:'/cart',
+                element:<AddToCart />
+            },
+            {
+                path:'/search',
+                element:<SearchResult />
             }
         ]
     },

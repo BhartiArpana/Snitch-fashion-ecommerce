@@ -17,7 +17,7 @@ const cartSchema = new mongoose.Schema(
         },
         variants: {
           type: mongoose.Schema.Types.ObjectId, // variant is a subdocument _id inside Product.variants
-          ref:'Product.variants',
+      
           required: true,
         },
         quantity: {

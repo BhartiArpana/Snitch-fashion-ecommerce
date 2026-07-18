@@ -50,7 +50,7 @@
   // THE MAIN FIX: minmax(0, ...) instead of plain fr — without this,
   // the right column's content forces itself wider and steals space
   // from the image column, making the image look small.
- // ── Container Layout ──────────────────────────────────────
+  // ── Container Layout ──────────────────────────────────────
   &__container {
     display: flex;
     gap: 3rem;
@@ -95,7 +95,10 @@
     overflow-y: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     .thumbnail-btn {
       flex-shrink: 0;

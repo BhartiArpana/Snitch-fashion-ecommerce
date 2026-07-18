@@ -58,3 +58,13 @@ export async function addProductVariants({id,variantPayload}){
   const response = await productApiInstance.post(`/${id}/variants`,formData)
   return response.data
 }
+
+export async function searchSuggestion(searchItem){
+  const response = await productApiInstance.get(`/search/suggestion?searchItem=${searchItem}`)
+  return response.data
+}
+
+export async function searchProducts(searchItem){
+  const response = await productApiInstance.get(`/search?searchItem=${searchItem}`)
+  return response.data
+}

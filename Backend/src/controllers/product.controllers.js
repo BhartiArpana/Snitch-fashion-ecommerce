@@ -135,3 +135,69 @@ export const addProductVariants = async (req, res) => {
     product,
   });
 };
+
+
+export const searchproducts = async(req,res)=>{
+    const {searchItem} = req.query
+
+    const products = await productModel.find({
+        $or:[
+            {
+                title:{ "$regex": searchItem, "$options": 'i' }
+            },
+            {
+                description:{ "$regex": searchItem, "$options": 'i' }
+            },
+             {
+                additional_info:{ "$regex": searchItem, "$options": 'i' }
+            }
+
+        ]
+    })
+
+    if(products.length==0){
+       return res.status(200).json({
+            message:'no result found',
+            success:false
+        })
+    }
+
+    res.status(200).json({
+        message:'suggestion fetched ',
+        success:true,
+        products
+    })
+}
+
+
+export const searchSuggestion = async(req,res)=>{
+    const {searchItem} = req.query
+
+    const suggestion = await productModel.find({
+        $or:[
+            {
+                title:{ "$regex": searchItem, "$options": 'i' }
+            },
+            {
+                description:{ "$regex": searchItem, "$options": 'i' }
+            },
+             {
+                additional_info:{ "$regex": searchItem, "$options": 'i' }
+            }
+
+        ]
+    }).select('title').limit(5)
+
+    if(suggestion.length==0){
+       return res.status(200).json({
+            message:'no result found',
+            success:false
+        })
+    }
+
+    res.status(200).json({
+        message:'suggestion fetched ',
+        success:true,
+        suggestion
+    })
+}

@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useProduct } from "../hook/useProduct";
 import { useState, useEffect, useMemo } from "react";
@@ -68,6 +68,7 @@ function CardDetails() {
   const isLoading = useSelector((state) => state.products.loading);
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
+  const location = useLocation
  
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -94,7 +95,8 @@ function CardDetails() {
 
   async function handleAddToCard({productId,variantId}) {
     if (!user) {
-      navigate("/login");
+      navigate("/login",{state:{from:location.pathname}});
+      return 
     }
      await handleAddToCartHook({productId,variantId})
     // console.log('product ',product._id);

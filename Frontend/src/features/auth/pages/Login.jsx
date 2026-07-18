@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleTheme } from '../../../app/theme.state.js';
 import '../style/login.scss';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {useAuth } from '../hook/useAuth'
 import GoogleLogin from '../components/GoogleLogin.jsx';
 
@@ -11,7 +11,7 @@ function Login() {
   const themeMode = useSelector((state) => state.theme.mode);
   const navigate = useNavigate();
   const {handleLogin} = useAuth()
-  
+  const location = useLocation()
   
 
   const [formData, setFormData] = useState({
@@ -40,7 +40,9 @@ function Login() {
        navigate('/seller/products')
     }
     else if(user?.role =='buyer'){
-      navigate('/');
+      console.log("location.state:", location.state);
+      const redirectTo = location.state?.from || "/"; // fallback landing page
+  navigate(redirectTo, { replace: true });
     }
   };
 

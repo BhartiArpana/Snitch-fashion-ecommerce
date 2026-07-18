@@ -23,6 +23,7 @@ function CreateProduct() {
         priceAmount: '',
         priceCurrency: 'INR',
         stock:'',
+         additional_info: '',
         attribut:[{key:'',value:''}]
     });
     
@@ -141,6 +142,7 @@ const removeAttributeRow = (idx) => {
         formData.append('priceAmount', form.priceAmount);
         formData.append('priceCurrency', form.priceCurrency);
         formData.append('stock', form.stock);
+        formData.append('additional_info', form.additional_info.trim());
          // form.attribut array ko object mein convert karo: [{key:'color',value:'red'}] → {color:'red'}
     const attributObj = form.attribut.reduce((acc, { key, value }) => {
         if (key.trim() && value.trim()) acc[key.trim()] = value.trim();
@@ -154,11 +156,12 @@ const removeAttributeRow = (idx) => {
         const product = await handleCreateProduct(formData);
         if (product) {
             setSuccess(true);
-            setForm({ title: '', description: '', priceAmount: '', priceCurrency: 'INR' });
+            setForm({ title: '', description: '', priceAmount: '', priceCurrency: 'INR', stock: '', additional_info: '', attribut:[{key:'',value:''}] });
             setImages([]);
             setTimeout(() => setSuccess(false), 3500);
         }
         navigate('/seller/products')
+        
     };
 
     return (
@@ -416,6 +419,22 @@ const removeAttributeRow = (idx) => {
                                 </button>
                             )}
                         </div>
+                        {/* Additional Info */}
+<div className="cp-field">
+    <label htmlFor="cp-additional-info" className="cp-field__label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Additional Info <span className="cp-field__label-hint">(optional)</span>
+    </label>
+    <textarea
+        id="cp-additional-info"
+        name="additional_info"
+        value={form.additional_info}
+        onChange={handleChange}
+        placeholder="Care instructions, sizing notes, or anything else buyers should know..."
+        className="cp-field__textarea"
+        rows={3}
+    />
+</div>
                     </div>
                      {/* Submit */}
                         <button

@@ -9,6 +9,7 @@ import {config} from './config/config.js'
 import productRoutes from './routes/product.routes.js'
 import cartRoutes from './routes/cart.routes.js'
 
+
 const app= express()
 
 app.use(express.json())
@@ -32,4 +33,5 @@ passport.use(new GoogleStrategy({
 app.use('/api/auth',authRoutes)
 app.use('/api/products',productRoutes)
 app.use('/api/cart',cartRoutes)
+
 export default app
