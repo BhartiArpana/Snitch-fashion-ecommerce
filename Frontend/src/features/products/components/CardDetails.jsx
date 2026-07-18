@@ -8,7 +8,9 @@ import { useCart } from "../../cart/hook/useCart";
 
 function parseStructuredText(text) {
   if (!text) return [];
-  return text
+  // Normalize Windows-style CRLF line endings to plain \n first
+  const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  return normalized
     .split(/\n{2,}/)
     .map((block) => block.trim())
     .filter(Boolean)
@@ -73,6 +75,8 @@ function CardDetails() {
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0]); // null = base product
+  // Tracks the currently chosen value for EVERY attribute (e.g. { color: "Blue", size: "M" })
+  const [selectedAttributes, setSelectedAttributes] = useState(product?.variants?.[0]?.attribut || {});
   const [infoExpanded, setInfoExpanded] = useState(false);
 
   useEffect(() => {
@@ -85,11 +89,39 @@ function CardDetails() {
   useEffect(() => {
     setActiveImageIndex(0);
     setSelectedVariant(product?.variants?.[0] || null);
+    setSelectedAttributes(product?.variants?.[0]?.attribut || {});
     setInfoExpanded(false);
   }, [product]);
 
-  function handleSelectVariant(variant) {
-    setSelectedVariant(variant);
+  // Finds the variant that matches every currently selected attribute.
+  // Falls back to the variant matching the MOST attributes if no exact match exists
+  // (e.g. that exact color+size combo isn't in stock).
+  function findBestMatchingVariant(allVariants, attributes) {
+    const exactMatch = allVariants.find((v) =>
+      Object.keys(attributes).every((key) => v.attribut?.[key] === attributes[key])
+    );
+    if (exactMatch) return exactMatch;
+
+    let bestVariant = allVariants[0];
+    let bestScore = -1;
+    allVariants.forEach((v) => {
+      const score = Object.keys(attributes).filter(
+        (key) => v.attribut?.[key] === attributes[key]
+      ).length;
+      if (score > bestScore) {
+        bestScore = score;
+        bestVariant = v;
+      }
+    });
+    return bestVariant;
+  }
+
+  // Called when the user taps ANY attribute option (color swatch, size pill, etc.)
+  function handleSelectAttribute(key, value) {
+    const updatedAttributes = { ...selectedAttributes, [key]: value };
+    const matchedVariant = findBestMatchingVariant(product?.variants || [], updatedAttributes);
+    setSelectedAttributes(updatedAttributes);
+    setSelectedVariant(matchedVariant);
     setActiveImageIndex(0); // reset thumbnail index for the new image set
   }
 
@@ -99,9 +131,6 @@ function CardDetails() {
       return 
     }
      await handleAddToCartHook({productId,variantId})
-    // console.log('product ',product._id);
-    // console.log('variant ',selectedVariant._id);
-    
   }
 
   function handleBuyNow() {
@@ -158,10 +187,30 @@ function CardDetails() {
 
   const activePrice = selectedVariant ? selectedVariant.price : product.price;
 
-  // Figure out which attribute key drives the variant swatches (e.g. "color")
-  const attributeKey =
-    variants.find((v) => v.attribut && Object.keys(v.attribut).length)?.attribut &&
-    Object.keys(variants.find((v) => v.attribut && Object.keys(v.attribut).length).attribut)[0];
+  // Collect every attribute key present across all variants (e.g. ["color", "size"])
+  const attributeKeys = Array.from(
+    variants.reduce((keys, v) => {
+      if (v.attribut) {
+        Object.keys(v.attribut).forEach((k) => keys.add(k));
+      }
+      return keys;
+    }, new Set())
+  );
+
+  // For each attribute key, build the list of unique values available (with a
+  // representative variant so we can grab an image for color-style swatches)
+  const attributeOptions = attributeKeys.map((key) => {
+    const seen = new Set();
+    const options = [];
+    variants.forEach((v) => {
+      const value = v.attribut?.[key];
+      if (value && !seen.has(value)) {
+        seen.add(value);
+        options.push({ value, variant: v });
+      }
+    });
+    return { key, options };
+  });
 
   const hasAdditionalInfo = Boolean(product.additional_info);
   
@@ -213,37 +262,50 @@ function CardDetails() {
 
           <p className="product-info__desc">{product.description}</p>
 
-          {/* Variant Selector */}
-          {variants.length > 0 && (
-            <div className="variant-selector">
-              <div className="variant-selector__header">
-                <span className="selector-title">
-                  {attributeKey ? attributeKey.toUpperCase() : "OPTIONS"}
-                  {selectedVariant?.attribut?.[attributeKey] && (
-                    <span className="selector-title__value">
-                      : {selectedVariant.attribut[attributeKey]}
-                    </span>
-                  )}
-                </span>
+          {/* Variant Selectors - one group per attribute (color, size, etc.) */}
+          {attributeOptions.map(({ key, options }) => {
+            const isColorLike = /color|colour/i.test(key);
+            return (
+              <div className="variant-selector" key={key}>
+                <div className="variant-selector__header">
+                  <span className="selector-title">
+                    {key.toUpperCase()}
+                    {selectedAttributes?.[key] && (
+                      <span className="selector-title__value">
+                        : {selectedAttributes[key]}
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <div className="variant-selector__options">
+                  {options.map(({ value, variant }) => {
+                    const isActive = selectedAttributes?.[key] === value;
+                    return isColorLike ? (
+                      <button
+                        key={value}
+                        className={`variant-swatch ${isActive ? "active" : ""}`}
+                        onClick={() => handleSelectAttribute(key, value)}
+                        type="button"
+                        title={value}
+                      >
+                        <img src={variant.image?.[0]?.url} alt={value} />
+                        <span className="variant-swatch__label">{value}</span>
+                      </button>
+                    ) : (
+                      <button
+                        key={value}
+                        className={`variant-pill ${isActive ? "active" : ""}`}
+                        onClick={() => handleSelectAttribute(key, value)}
+                        type="button"
+                      >
+                        {value}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="variant-selector__options">
-  {variants.map((variant) => (
-    <button
-      key={variant._id}
-      className={`variant-swatch ${selectedVariant?._id === variant._id ? "active" : ""}`}
-      onClick={() => handleSelectVariant(variant)}
-      type="button"
-      title={attributeKey ? variant.attribut?.[attributeKey] : undefined}
-    >
-      <img src={variant.image?.[0]?.url} alt={variant.attribut?.[attributeKey] || "Variant"} />
-      {attributeKey && variant.attribut?.[attributeKey] && (
-        <span className="variant-swatch__label">{variant.attribut[attributeKey]}</span>
-      )}
-    </button>
-  ))}
-</div>
-            </div>
-          )}
+            );
+          })}
 
           {/* Action Buttons */}
           <div className="product-actions">
