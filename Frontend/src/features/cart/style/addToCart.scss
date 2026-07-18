@@ -39,7 +39,7 @@
   gap: 1rem;
   background-color: var(--card-bg);
   border: 0.0625rem solid var(--border-color);
-  border-radius: 0.75rem;
+  // border-radius: 0.75rem;
   padding: 1rem;
   transition: background-color var(--transition-speed), border-color var(--transition-speed);
 
@@ -47,7 +47,7 @@
     width: 6.5rem;
     height: 6.5rem;
     flex-shrink: 0;
-    border-radius: 0.5rem;
+    // border-radius: 0.5rem;
     overflow: hidden;
     background-color: var(--input-bg);
 
@@ -195,11 +195,12 @@
 .cart-summary {
   background-color: var(--card-bg);
   border: 0.0625rem solid var(--border-color);
-  border-radius: 0.75rem;
+  // border-radius: 0.75rem;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
+  margin-top: 3rem;
   transition: background-color var(--transition-speed), border-color var(--transition-speed);
 
   &__title {

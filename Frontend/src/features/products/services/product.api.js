@@ -39,23 +39,24 @@ export async function getProductDetails(id){
   return response.data
 }
 
-export async function addProductVariants({id,variantPayload}){
-  const formData =new FormData()
-  console.log('vari ',variantPayload.stock);
-  
-  variantPayload.newImageFiles.forEach((image)=>{
-    formData.append('images',image)
+export async function addProductVariants({ id, variantPayload }) {
+  const formData = new FormData()
 
+  variantPayload.newImageFiles.forEach((image) => {
+    formData.append('images', image)
   })
 
-  formData.append('stock',variantPayload.stock)
-  formData.append('attributes',JSON.stringify(variantPayload.attribut))
-  formData.append('priceAmount',JSON.stringify(variantPayload.price.amount))
-  formData.append('additional_info',variantPayload.Additional_info)
-  console.log('form ', formData);
-  
+  formData.append('stock', variantPayload.stock)
+  formData.append('attributes', JSON.stringify(variantPayload.attribut))
+  formData.append('additional_info', variantPayload.Additional_info)
 
-  const response = await productApiInstance.post(`/${id}/variants`,formData)
+  // price sirf tab bhejo jab user ne diya ho
+  if (variantPayload.price) {
+    formData.append('priceAmount', variantPayload.price.amount)
+    formData.append('priceCurrency', variantPayload.price.currency)
+  }
+
+  const response = await productApiInstance.post(`/${id}/variants`, formData)
   return response.data
 }
 
