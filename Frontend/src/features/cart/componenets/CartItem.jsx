@@ -11,8 +11,8 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   const selectedVariant = product?.variants?.find((v) => v._id === variantId);
   const image = selectedVariant?.image?.[0]?.url || product?.images?.[0]?.url;
   const navigate = useNavigate()
-  const {handleIncrementCartItem} = useCart()
-  const [updateCartQuantity,setUpdateCartQuantity]=useState(quantity)
+  const {handleIncrementCartItem,handleDecrementCartItem,handleRemoveCartItem} = useCart()
+  const [updateCartQuantity,setUpdateCartQuantity]=useState(quantity || 1)
   
   
  
@@ -22,12 +22,12 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   
 
   async function handleCartDetails(id){
-    //  navigate(`/products/${id}`)
+     navigate(`/products/${id}`)
     //  onClick={()=>handleCartDetails(product._id)}
   }
 
   return (
-    <div className="cart-item" >
+    <div className="cart-item" onClick={()=>handleCartDetails(product._id)} >
       <div className="cart-item__image">
         <img src={image} alt={product?.title || 'Product'} />
       </div>
@@ -38,7 +38,10 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
             <h3 className="cart-item__title">{product?.title}</h3>
             <p className="cart-item__description">{product?.description}</p>
           </div>
-          <button className="cart-item__remove" onClick={onRemove} aria-label="Remove item">
+          <button className="cart-item__remove" onClick={(e)=>{
+            e.stopPropagation()
+            handleRemoveCartItem({productId:product?._id,variantId})
+          }} aria-label="Remove item">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -56,9 +59,16 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
 
         <div className="cart-item__bottom">
           <div className="cart-item__quantity">
-            <button className="cart-item__qty-btn" onClick={onDecrease} disabled={quantity <= 1} aria-label="Decrease quantity">−</button>
-            <span className="cart-item__qty-value">{quantity}</span>
-            <button className="cart-item__qty-btn" onClick={()=>{
+            <button className="cart-item__qty-btn" onClick={
+              (e)=>{
+                e.stopPropagation()
+                setUpdateCartQuantity(quantity)
+               if(quantity>1){ handleDecrementCartItem({productId:product?._id,variantId})}
+               
+              }} aria-label="Decrease quantity">−</button>
+            <span className="cart-item__qty-value">{updateCartQuantity}</span>
+            <button className="cart-item__qty-btn" onClick={(e)=>{
+              e.stopPropagation()
               setUpdateCartQuantity(quantity)
               handleIncrementCartItem({productId:product?._id,variantId})
               

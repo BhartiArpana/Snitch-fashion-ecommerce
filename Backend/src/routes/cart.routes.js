@@ -1,7 +1,7 @@
 import Router from 'express'
 import {authenticateUser} from '../middlewares/auth.middleware.js' 
 import {validateAddtoCart,validateincrementCartQuantity} from '../validator/cart.validator.js'
-import {addToCart,getCart,incrementCartQuantity} from '../controllers/cart.controller.js'
+import {addToCart,getCart,incrementCartQuantity,decrementCartQuantity,removeAddToCart} from '../controllers/cart.controller.js'
 
 const route = Router()
 
@@ -25,5 +25,14 @@ route.get('/',authenticateUser,getCart)
 // @access private
 
 route.patch('/product/increment/:productId/:variantId',authenticateUser,validateincrementCartQuantity,incrementCartQuantity)
+
+// @route /api/cart/product/decrement/:productId/variantId
+// @description decrement cart quantity by 1
+// @access private
+
+route.patch('/product/decrement/:productId/:variantId',authenticateUser,validateincrementCartQuantity,decrementCartQuantity)
+
+// @route /api/cart/product/remove/:productId/:variantId
+route.delete('/product/remove/:productId/:variantId',authenticateUser,validateincrementCartQuantity,removeAddToCart)
 
 export default route

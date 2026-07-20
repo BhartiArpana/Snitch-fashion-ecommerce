@@ -19,3 +19,13 @@ export const incrementCartItemApi = async({productId,variantId})=>{
     const response = await cartApiInstance.patch(`/product/increment/${productId}/${variantId}`)
     return response.data
 }
+
+export const decrementCartItemApi = async({productId,variantId})=>{
+    const response = await cartApiInstance.patch(`/product/decrement/${productId}/${variantId}`)
+    return response.data
+}
+
+export const removeCartItem = async({productId,variantId})=>{
+    const response = await cartApiInstance.delete(`/product/remove/${productId}/${variantId}`)
+    return response.data
+}
