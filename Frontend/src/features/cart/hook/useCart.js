@@ -1,5 +1,5 @@
-import {addToCart,getCart} from '../services/cart.api'
-import {setItems,addItem,setError,setLoading} from '../state/cart.state'
+import {addToCart,getCart,incrementCartItemApi} from '../services/cart.api'
+import {setItems,addItem,setError,setLoading,incrementCartItem} from '../state/cart.state'
 import { useDispatch } from 'react-redux'
 
 export const useCart = ()=>{
@@ -37,5 +37,22 @@ export const useCart = ()=>{
         }
     }
 
-    return {handleAddToCartHook,handleGetCart}
+    const handleIncrementCartItem = async({productId,variantId})=>{
+        dispatch(setLoading(true))
+        try{
+            await incrementCartItemApi({productId,variantId})
+            // console.log('response data:', data)
+            dispatch(incrementCartItem({productId,variantId}))
+            // console.log('data',data)
+             
+
+        }catch(err){
+             console.log('actual error:', err)
+            dispatch(setError(err.response.data.message|| err.message))
+        }finally{
+            dispatch(setLoading(false))
+        }
+    }
+
+    return {handleAddToCartHook,handleGetCart,handleIncrementCartItem}
 }

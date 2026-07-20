@@ -1,6 +1,9 @@
 import '../style/cartItem.scss';
 import { useProduct } from '../../products/hook/useProduct';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../hook/useCart';
+import { useSelector } from 'react-redux';
+import { useState } from 'react';
 
 function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   const { product, variants: variantId, quantity, price } = item;
@@ -8,13 +11,23 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   const selectedVariant = product?.variants?.find((v) => v._id === variantId);
   const image = selectedVariant?.image?.[0]?.url || product?.images?.[0]?.url;
   const navigate = useNavigate()
+  const {handleIncrementCartItem} = useCart()
+  const [updateCartQuantity,setUpdateCartQuantity]=useState(quantity)
+  
+  
+ 
+  
+  // console.log('varinats',variantId);
+  //  console.log('productId ',product?._id);
+  
 
   async function handleCartDetails(id){
-     navigate(`/products/${id}`)
+    //  navigate(`/products/${id}`)
+    //  onClick={()=>handleCartDetails(product._id)}
   }
 
   return (
-    <div className="cart-item" onClick={()=>handleCartDetails(product._id)}>
+    <div className="cart-item" >
       <div className="cart-item__image">
         <img src={image} alt={product?.title || 'Product'} />
       </div>
@@ -45,7 +58,11 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
           <div className="cart-item__quantity">
             <button className="cart-item__qty-btn" onClick={onDecrease} disabled={quantity <= 1} aria-label="Decrease quantity">−</button>
             <span className="cart-item__qty-value">{quantity}</span>
-            <button className="cart-item__qty-btn" onClick={onIncrease} aria-label="Increase quantity">+</button>
+            <button className="cart-item__qty-btn" onClick={()=>{
+              setUpdateCartQuantity(quantity)
+              handleIncrementCartItem({productId:product?._id,variantId})
+              
+            }} aria-label="Increase quantity">+</button>
           </div>
 
           <div className="cart-item__price">

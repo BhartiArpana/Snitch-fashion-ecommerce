@@ -1,7 +1,7 @@
 import Router from 'express'
 import {authenticateUser} from '../middlewares/auth.middleware.js' 
-import {validateAddtoCart} from '../validator/cart.validator.js'
-import {addToCart,getCart} from '../controllers/cart.controller.js'
+import {validateAddtoCart,validateincrementCartQuantity} from '../validator/cart.validator.js'
+import {addToCart,getCart,incrementCartQuantity} from '../controllers/cart.controller.js'
 
 const route = Router()
 
@@ -19,5 +19,11 @@ route.post('/add/:productId/:variantId',authenticateUser,validateAddtoCart,addTo
 // @access private
 
 route.get('/',authenticateUser,getCart)
+
+// @route /api/cart/product/increment/:productId/:variantId
+// @description increment cart quantity by 1
+// @access private
+
+route.patch('/product/increment/:productId/:variantId',authenticateUser,validateincrementCartQuantity,incrementCartQuantity)
 
 export default route
