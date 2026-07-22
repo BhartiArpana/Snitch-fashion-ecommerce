@@ -15,7 +15,7 @@ export const useAuth = ()=>{
         dispatch(setUser(data.user))
         return data.user
         }catch(err){
-            dispatch(setError(err.message))
+            dispatch(setError(err.response.data.message))
         }finally{
             dispatch(setLoading(false))
         }
@@ -32,7 +32,7 @@ export const useAuth = ()=>{
             
             
         }catch(err){
-            dispatch(setError(err))
+            dispatch(setError(err.response.data.message))
         }finally{
             dispatch(setLoading(false))
         }

@@ -1,6 +1,7 @@
 import productModel from "../model/product.model.js";
 import cartModel from "../model/cart.model.js";
 import { stockInVariant } from "../dao/product.dao.js";
+import mongoose from "mongoose";
 
 export const addToCart = async (req, res) => {
   const { productId, variantId } = req.params;
@@ -80,11 +81,56 @@ export const addToCart = async (req, res) => {
 
 export const getCart = async (req, res) => {
   let user = req.user;
-  let cart = await cartModel
-    .findOne({ user: user._id })
-    .populate("items.product")
-    .populate("items.product")
-    .populate("items.variants");
+  let cart = (await cartModel.aggregate([
+    {
+      $match: {
+        user: new mongoose.Types.ObjectId(user._id),
+      },
+    },
+    { $unwind: { path: "$items" } },
+    {
+      $lookup: {
+        from: "products",
+        localField: "items.product",
+        foreignField: "_id",
+        as: "items.product",
+      },
+    },
+    { $unwind: { path: "$items.product" } },
+    {
+      $unwind: { path: "$items.product.variants" },
+    },
+    {
+      $match: {
+        $expr: {
+          $eq: ["$items.variants", "$items.product.variants._id"],
+        },
+      },
+    },
+    {
+      $addFields: {
+        itemsPrice: {
+          price: {
+            $multiply: [
+              "$items.quantity",
+              "$items.product.variants.price.amount",
+            ],
+          },
+          currency: "$items.product.variants.price.currency",
+        },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        totalPrice: { $sum: "$itemsPrice.price" },
+        currency: {
+          $first: "$itemsPrice.currency",
+        },
+        items: { $push: "$items" },
+      },
+    },
+  ]))[0];
 
   if (!cart) {
     cart = await cartModel.create({
@@ -195,9 +241,6 @@ export const decrementCartQuantity = async (req, res) => {
     });
   }
 
-
-    
-
   const updateCart = await cartModel.findOneAndUpdate(
     {
       user: req.user._id,
@@ -205,7 +248,7 @@ export const decrementCartQuantity = async (req, res) => {
       "items.variants": variantId,
     },
     {
-      $inc: {  "items.$.quantity": -1 },
+      $inc: { "items.$.quantity": -1 },
     },
     {
       new: true,
@@ -221,50 +264,49 @@ export const decrementCartQuantity = async (req, res) => {
 
 export const removeAddToCart = async (req, res) => {
   const { productId, variantId } = req.params;
- try{
-   const product = await productModel.findOne({
-    _id: productId,
-    "variants._id": variantId,
-  });
-
-  if (!product) {
-    return res.status(404).json({
-      message: "Product not found",
+  try {
+    const product = await productModel.findOne({
+      _id: productId,
+      "variants._id": variantId,
     });
-  }
 
-  const cart = await cartModel.findOne({
-    user: req.user._id,
-  });
-  if (!cart) {
-    return res.status(404).json({
-      message: "cart not found"
-    });
-  }
-  const deleteItemId =
-    cart.items.find(
-      (item) =>
-        item.product.toString() == productId &&
-        item.variants.toString() == variantId,
-    )?._id || null;
-
-    if(!deleteItemId){
+    if (!product) {
       return res.status(404).json({
-        message:"item not found",
-        success:false
-      })
+        message: "Product not found",
+      });
+    }
+
+    const cart = await cartModel.findOne({
+      user: req.user._id,
+    });
+    if (!cart) {
+      return res.status(404).json({
+        message: "cart not found",
+      });
+    }
+    const deleteItemId =
+      cart.items.find(
+        (item) =>
+          item.product.toString() == productId &&
+          item.variants.toString() == variantId,
+      )?._id || null;
+
+    if (!deleteItemId) {
+      return res.status(404).json({
+        message: "item not found",
+        success: false,
+      });
     }
     await cartModel.updateOne(
-  { user: req.user._id },
-  { $pull: { items: { _id: deleteItemId } } }
-)
+      { user: req.user._id },
+      { $pull: { items: { _id: deleteItemId } } },
+    );
 
     res.status(200).json({
-      message:'cart deleted successfully',
-      success:true
-    })
- }catch(err){
-  console.log('err ',err);
-  
- }
+      message: "cart deleted successfully",
+      success: true,
+    });
+  } catch (err) {
+    console.log("err ", err);
+  }
 };

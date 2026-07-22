@@ -12,7 +12,7 @@ function AddToCart(){
   const user = useSelector(state=>state.auth.user)
   const navigate = useNavigate()
   
-
+// console.log('items',cartData)
   if(!user){
     navigate('/login')
   }
@@ -20,9 +20,9 @@ function AddToCart(){
   useEffect(() => {
     handleGetCart();
   }, []);
-    const totalAmount = items.reduce((sum, item) => sum + item.price.amount * item.quantity, 0);
+  //   const totalAmount = items.reduce((sum, item) => sum + item.price.amount * item.quantity, 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const currency = items[0]?.price?.currency || 'INR';
+  // const currency = items[0]?.price?.currency || 'INR';
 
   if (items.length === 0) {
     return (
@@ -57,7 +57,7 @@ function AddToCart(){
             <h2 className="cart-summary__title">Order Summary</h2>
             <div className="cart-summary__row">
               <span>Subtotal ({totalItems} items)</span>
-              <span>{currency} {totalAmount}</span>
+              <span>{cartData.currency} {cartData.totalPrice}</span>
             </div>
             <div className="cart-summary__row">
               <span>Delivery</span>
@@ -66,7 +66,7 @@ function AddToCart(){
             <hr className="cart-summary__divider" />
             <div className="cart-summary__row cart-summary__row--total">
               <span>Total</span>
-              <span>{currency} {totalAmount}</span>
+              <span>{cartData.currency} {cartData.totalPrice}</span>
             </div>
             <button className="cart-summary__checkout-btn">Proceed to Checkout</button>
           </div>

@@ -6,9 +6,10 @@ import { useSelector } from 'react-redux';
 import { useState } from 'react';
 
 function CartItem({ item, onIncrease, onDecrease, onRemove }) {
+  //  console.log('item ',item)
   const { product, variants: variantId, quantity, price } = item;
   const {handleGetProductDetails} =useProduct()
-  const selectedVariant = product?.variants?.find((v) => v._id === variantId);
+  const selectedVariant = product?.variants?._id === variantId;
   const image = selectedVariant?.image?.[0]?.url || product?.images?.[0]?.url;
   const navigate = useNavigate()
   const {handleIncrementCartItem,handleDecrementCartItem,handleRemoveCartItem} = useCart()
