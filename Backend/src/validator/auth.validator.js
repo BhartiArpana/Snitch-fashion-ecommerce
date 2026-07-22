@@ -36,3 +36,20 @@ export const loginValidator = [
         .isLength({min:6}).withMessage('Password must be at least 6 characters long'),
     validateRequest
 ]
+
+export const addressValidator = [
+     body('name')
+        .notEmpty().withMessage('Name is required'), 
+     body('mobileNumber')
+        .notEmpty().withMessage('Mobile number is required')
+        .isMobilePhone('any').withMessage('Invalid mobile number'),, 
+      body('street')
+        .notEmpty().withMessage('street is required'),
+      body('city')
+        .notEmpty().withMessage("City is required"),
+      body('pincode')
+        .notEmpty().withMessage("pincode is required"),
+    body('state')
+        .notEmpty().withMessage("state is required"),
+        validateRequest
+]
