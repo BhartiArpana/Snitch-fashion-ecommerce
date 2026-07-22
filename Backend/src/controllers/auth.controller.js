@@ -132,4 +132,38 @@ export const addAddress = async (req, res) => {
   });
 };
 
+export const updateAddress = async(req,res)=>{
+  const {addressId} = req.params
+  let user = req.user
+   user = await userModel.findOne(
+      {_id:user._id}
+  )
 
+  const address = user.address.find(
+    (addr)=>addr._id.toString()==addressId
+  )
+
+  if(!addressId){
+    res.status(404).json({
+      message:"Wrong address id"
+    })
+  }
+
+  if (req.body.name) address.name = req.body.name;
+    if (req.body.mobileNumber) address.mobileNumber = req.body.mobileNumber;
+    if (req.body.street) address.street = req.body.street;
+    if (req.body.city) address.city = req.body.city;
+    if (req.body.state) address.state = req.body.state;
+    if (req.body.pincode) address.pincode = req.body.pincode;
+    if (req.body.country) address.country = req.body.country;
+    if (req.body.isDefault !== undefined) address.isDefault = req.body.isDefault;
+
+    await user.save();
+    res.status(200).json({
+      message: "Address updated successfully",
+      success: true,
+      user,
+    });
+
+  // console.log(address._id)
+}

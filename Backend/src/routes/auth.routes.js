@@ -1,6 +1,6 @@
 import express from 'express'
-import {registerValidator,loginValidator,addressValidator} from '../validator/auth.validator.js'
-import {register,login,googleCallback,getme,addAddress} from '../controllers/auth.controller.js'
+import {registerValidator,loginValidator,addressValidator,updateAddressValidator} from '../validator/auth.validator.js'
+import {register,login,googleCallback,getme,addAddress,updateAddress} from '../controllers/auth.controller.js'
 import passport from 'passport'
 import {config} from '../config/config.js'
 import {authenticateUser} from '../middlewares/auth.middleware.js'
@@ -25,10 +25,16 @@ router.get('/google/callback',
 // @description get user details
 router.get('/get-me',authenticateUser,getme)
 
-// @route /api/auth/address/:id
+// @route /api/auth/address/
 // @description add address
 // @access private
 
 router.post('/address',authenticateUser,addressValidator,addAddress)
+
+// @route /api/auth/address/:id
+// @description update address
+// @access private
+
+router.patch('/address/:addressId',authenticateUser,updateAddressValidator,updateAddress)
 
 export default router

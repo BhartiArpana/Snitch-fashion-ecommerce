@@ -1,4 +1,4 @@
-import {body,validationResult} from 'express-validator'
+import {body,param,validationResult} from 'express-validator'
 
 function validateRequest(req,res,next){
       const errors = validationResult(req)
@@ -52,4 +52,8 @@ export const addressValidator = [
     body('state')
         .notEmpty().withMessage("state is required"),
         validateRequest
+]
+
+export const updateAddressValidator = [
+    param('id').isMongoId().withMessage('Invalid address id')
 ]
