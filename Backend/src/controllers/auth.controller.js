@@ -103,28 +103,31 @@ export const getme = async (req, res) => {
 };
 
 export const addAddress = async (req, res) => {
-  const { country, name, mobileNumber, street, city, pincode, state } =
+  let { country, name, mobileNumber, street, city, pincode, state ,isDefault} =
     req.body;
   const user = req.user;
+  if(user.address.length==0 ){
+    isDefault = true
+  }
+else {if(isDefault){
+  user.address.forEach((addr)=>addr.isDefault=false)
+  
+}
 
-  const address = await userModel.findByIdAndUpdate(
-    user._id,
-    {
-      $push: {
-        address: {
-          country: country || "India",
-          name: name,
-          mobileNumber: mobileNumber,
-          street: street,
-          city: city,
-          pincode: pincode,
-          state: state,
-        },
-      },
-    },
-    { new: true },
-  );
+}
 
+  user.address.push({
+  country: country || "India",
+  name,
+  mobileNumber,
+  street,
+  city,
+  pincode,
+  state,
+  isDefault
+})
+
+await user.save()
   res.status(201).json({
     message: "Address added successfully",
     success: true,
@@ -167,3 +170,5 @@ export const updateAddress = async(req,res)=>{
 
   // console.log(address._id)
 }
+
+

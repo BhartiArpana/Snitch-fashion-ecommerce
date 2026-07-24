@@ -9,10 +9,14 @@ function App() {
   const {handleGetMe} = useAuth()
   const themeMode = useSelector((state) => state.theme.mode);
   const user = useSelector(state=>state.auth.user)
+  
+  
 
   useEffect(()=>{
      handleGetMe()
+     
   },[])
+  
 
   // Sync theme class to <html> so CSS vars cascade correctly from root
   // (Applying theme only on .app-container div can't affect html/body background)

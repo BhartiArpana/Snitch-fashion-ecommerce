@@ -17,6 +17,10 @@ function AddToCart(){
     navigate('/login')
   }
 
+  function handleCheckOut(){
+    // navigate('/address')
+  }
+
   useEffect(() => {
     handleGetCart();
   }, []);
@@ -68,7 +72,7 @@ function AddToCart(){
               <span>Total</span>
               <span>{cartData.currency} {cartData.totalPrice}</span>
             </div>
-            <button className="cart-summary__checkout-btn">Proceed to Checkout</button>
+            <button className="cart-summary__checkout-btn" onClick={handleCheckOut}>Proceed to Checkout</button>
           </div>
         </div>
       </div>

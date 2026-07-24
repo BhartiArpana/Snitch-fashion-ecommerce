@@ -35,3 +35,14 @@ export const getMe = async()=>{
     const response = await authApiInstance.get('/get-me')
     return response.data
 }
+
+export const addAddress = async ({ form }) => {
+  try {
+    const response = await authApiInstance.post('/address', form)
+    console.log('data ', response)
+    return response
+  } catch (error) {
+    console.error('addAddress error:', error)
+    throw error
+  }
+}
