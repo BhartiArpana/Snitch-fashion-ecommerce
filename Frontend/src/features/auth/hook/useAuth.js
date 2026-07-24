@@ -45,7 +45,8 @@ export const useAuth = ()=>{
             dispatch(setUser(data.user))
             
 
-        }catch(err){}      
+        }catch(err){
+             dispatch(setError(err?.response?.data?.message))
         }finally{
             dispatch(setLoading(false))
         }
@@ -65,5 +66,5 @@ export const useAuth = ()=>{
 
     
 
-    return {handleRegister,handleLogin,handleGetMe,handleAddAddress}
+    return {handleRegister,handleLogin,handleGetMe,handleAddAddress};
 }
