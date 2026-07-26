@@ -1,4 +1,4 @@
-import '../style/GoogleLogin.scss'
+import '../style/googleLogin.scss'
 
 function GoogleLogin(){
     return (
