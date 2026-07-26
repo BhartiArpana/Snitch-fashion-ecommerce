@@ -16,11 +16,11 @@ app.use(express.json())
 app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(passport.initialize())
-// app.use(cors({
-//     origin:'http://localhost:5173',
-//     methods:['GET','POST','PUT','DELETE','PATCH'],
-//     credentials:true
-// }))
+app.use(cors({
+    origin:'http://localhost:5173',
+    methods:['GET','POST','PUT','DELETE','PATCH'],
+    credentials:true
+}))
 passport.use(new GoogleStrategy({
     clientID : config.CLIENT_ID,
     clientSecret : config.CLIENT_SECRET,
