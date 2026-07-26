@@ -106,7 +106,7 @@ export const addAddress = async (req, res) => {
   let { country, name, mobileNumber, street, city, pincode, state ,isDefault} =
     req.body;
   const user = req.user;
-  if(user.address.length==0 ){
+  if(user?.address.length==0 ){
     isDefault = true
   }
 else {if(isDefault){
@@ -116,7 +116,7 @@ else {if(isDefault){
 
 }
 
-  user.address.push({
+  user?.address.push({
   country: country || "India",
   name,
   mobileNumber,
@@ -131,7 +131,7 @@ await user.save()
   res.status(201).json({
     message: "Address added successfully",
     success: true,
-    address,
+    user,
   });
 };
 
@@ -142,7 +142,7 @@ export const updateAddress = async(req,res)=>{
       {_id:user._id}
   )
 
-  const address = user.address.find(
+  let address = user.address.find(
     (addr)=>addr._id.toString()==addressId
   )
 

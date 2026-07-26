@@ -1,4 +1,4 @@
-import { addToCart, getCart, incrementCartItemApi, decrementCartItemApi, removeCartItem } from '../services/cart.api'
+import { addToCart, getCart, incrementCartItemApi, decrementCartItemApi, removeCartItem,createOrder } from '../services/cart.api'
 import { setItems, addItem, setError, setLoading, incrementCartItem, decrementCartItem,removeItem } from '../state/cart.state'
 import { useDispatch } from 'react-redux'
 
@@ -85,5 +85,18 @@ export const useCart = () => {
         }
     }
 
-    return { handleAddToCartHook, handleGetCart, handleIncrementCartItem, handleDecrementCartItem, handleRemoveCartItem }
+    const handleCreateOrder = async()=>{
+        dispatch(setLoading(true))
+        try{
+            const data = await createOrder()
+            return data.order
+        }catch(err){
+            dispatch(setError(err.response.data.message || err.message))
+            return null
+        }finally{
+            dispatch(setLoading(false))
+        }
+    }
+
+    return { handleAddToCartHook, handleGetCart, handleIncrementCartItem, handleDecrementCartItem, handleRemoveCartItem,handleCreateOrder }
 }

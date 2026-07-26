@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import '../style/addAddress.scss'
 import { useAuth } from '../hook/useAuth'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { setUser } from '../state/auth.slice'
 
 const initialForm = {
   country: 'India',
@@ -21,6 +22,7 @@ const AddAddress = () => {
   const {handleAddAddress} = useAuth()
   const user = useSelector(state=>state.auth.user)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -46,8 +48,9 @@ const AddAddress = () => {
     e.preventDefault()
     if (!validate()) return
     if(!user) navigate('/login')
-    await handleAddAddress({form})
-    // console.log('Address saved:', form)
+     const data =  await handleAddAddress({form}) 
+    dispatch(setUser(data.user))
+    navigate('/address')
   }
 
   return (

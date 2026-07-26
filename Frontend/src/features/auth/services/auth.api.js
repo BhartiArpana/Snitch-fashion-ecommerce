@@ -46,3 +46,8 @@ export const addAddress = async ({ form }) => {
     throw error
   }
 }
+
+export const updateAddress = async({form,addressId})=>{
+      const response = await authApiInstance.patch(`/address/${addressId}`,form)
+      return response.data
+}

@@ -6,7 +6,7 @@ import '../style/addToCart.scss';
 import { useNavigate } from 'react-router-dom';
 
 function AddToCart(){
-     const { handleGetCart, handleIncreaseQty, handleDecreaseQty, handleRemoveItem } = useCart();
+     const { handleGetCart, handleIncreaseQty, handleDecreaseQty, handleRemoveItem ,handleCreateOrder} = useCart();
   const cartData = useSelector((state) => state.cart.items);
   const items = cartData?.items || [];
   const user = useSelector(state=>state.auth.user)
@@ -17,8 +17,10 @@ function AddToCart(){
     navigate('/login')
   }
 
-  function handleCheckOut(){
-    // navigate('/address')
+  async function handleCheckOut(){
+    navigate('/address')
+    // const order = await handleCreateOrder()
+    // console.log('order ',order)
   }
 
   useEffect(() => {

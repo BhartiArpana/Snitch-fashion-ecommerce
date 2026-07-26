@@ -12,6 +12,7 @@ import SellerProductDetails from "../features/products/components/SellerProductD
 import AddToCart from "../features/cart/pages/AddToCart";
 import SearchResult from "../features/products/pages/SearchResult";
 import AddAddress from "../features/auth/pages/AddAddress";
+import Address from "../features/auth/pages/Address";
 
 export const routes = createBrowserRouter([
     {
@@ -36,6 +37,10 @@ export const routes = createBrowserRouter([
             },
             {
                 path:'/address',
+                element:<Address />
+            },
+            {
+                path:'/address/add',
                 element:<AddAddress />
             }
         ]

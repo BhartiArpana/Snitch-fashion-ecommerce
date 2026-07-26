@@ -17,7 +17,11 @@ app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(passport.initialize())
 app.use(cors({
-    origin:'https://snitch-fashion-ecommerce-2.onrender.com',
+    origin:[
+        'https://snitch-fashion-ecommerce-2.onrender.com',
+        'http://localhost:5173'
+    ],
+
     methods:['GET','POST','PUT','DELETE','PATCH'],
     credentials:true
 }))
