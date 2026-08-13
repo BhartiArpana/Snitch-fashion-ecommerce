@@ -4,6 +4,7 @@ import { useProduct } from "../hook/useProduct";
 import { useState, useEffect, useMemo } from "react";
 import "../style/cardDetails.scss";
 import { useCart } from "../../cart/hook/useCart";
+import { useWishlist } from "../../wishlist/hook/useWishlist";
 
 
 function parseStructuredText(text) {
@@ -71,7 +72,8 @@ function CardDetails() {
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const location = useLocation
- 
+  const {handleAddToWishlist,handleRemoveWishlist,handleGetWishlist} = useWishlist()
+  const wishlist = useSelector((state) => state.wishlist.wishlist);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0]); // null = base product
@@ -79,12 +81,28 @@ function CardDetails() {
   const [selectedAttributes, setSelectedAttributes] = useState(product?.variants?.[0]?.attribut || {});
   const [infoExpanded, setInfoExpanded] = useState(false);
 
+  // Check if current product+variant is already wishlisted
+  const isWishlisted = useMemo(() => {
+    const wishlistItems = Array.isArray(wishlist) ? wishlist[0]?.items : wishlist?.items;
+    if (!wishlistItems || !product?._id || !selectedVariant?._id) return false;
+    return wishlistItems.some(
+      (item) => {
+        const itemProductId = item.product?._id || item.product;
+        const itemVariantId = typeof item.variants === 'string' ? item.variants : item.variants?._id;
+        return itemProductId === product._id && itemVariantId === selectedVariant._id;
+      }
+    );
+  }, [wishlist, product?._id, selectedVariant?._id]);
+
   useEffect(() => {
     if (id) {
       handleGetProductDetails(id);
     }
   }, [id]);
 
+  useEffect(()=>{
+    handleGetWishlist()
+  },[])
   // Reset selection whenever a new product loads
   useEffect(() => {
     setActiveImageIndex(0);
@@ -136,6 +154,20 @@ function CardDetails() {
   function handleBuyNow() {
     if (!user) {
       navigate("/login");
+    }
+  }
+
+  async function handleClickWishlist() {
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    const productId = product._id;
+    const variantId = selectedVariant._id;
+    if (isWishlisted) {
+      await handleRemoveWishlist({ productId, variantId });
+    } else {
+      await handleAddToWishlist({ productId, variantId });
     }
   }
 
@@ -323,12 +355,16 @@ function CardDetails() {
                 </svg>
                 ADD TO CART
               </button>
-              <button className="buy-now-btn" onClick={handleBuyNow}>
+              <button className="buy-now-btn" onClick={()=>handleBuyNow({productId:product._id,variantId:selectedVariant._id})}>
                 BUY NOW
               </button>
             </div>
-            <button className="wishlist-btn" aria-label="Add to wishlist">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <button
+              className={`wishlist-btn${isWishlisted ? ' wishlist-btn--active' : ''}`}
+              aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              onClick={handleClickWishlist}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill={isWishlisted ? '#ef4444' : 'none'} stroke={isWishlisted ? '#ef4444' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
             </button>

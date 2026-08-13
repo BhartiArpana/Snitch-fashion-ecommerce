@@ -1,6 +1,7 @@
 import whishlistModel from "../model/wishlist.model.js";
 import productModel from "../model/product.model.js";
 import userModel from "../model/user.model.js";
+import {getWishlistDetails} from "../dao/wishlist.dao.js";
 
 export const addToWhishlist = async (req, res) => {
   const { productId, variantId } = req.params;
@@ -26,7 +27,7 @@ export const addToWhishlist = async (req, res) => {
     });
   } else {
     const alreadyWishlist = await wishlist.items.some((item) => {
-      item.product.toString() == productId &&
+      return item.product.toString() == productId &&
         item.variants.toString() == variantId;
     });
     if (alreadyWishlist) {
@@ -49,7 +50,7 @@ export const addToWhishlist = async (req, res) => {
 
 export const getAllWishlistCart = async (req, res) => {
   const user = req.user;
-  const wishlist = await whishlistModel.find({ user: user._id });
+  const wishlist = await getWishlistDetails(user._id);
   if (!wishlist) {
     return res.status(400).json({
       message: "Data not found",

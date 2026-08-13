@@ -2,7 +2,8 @@
 // Light mode (default — applies to :root and html.theme-light)
 :root,
 html.theme-light {
-  --font-family: 'Plus Jakarta Sans', 'Outfit', 'Inter', sans-serif;
+  --font-family: 'Outfit', 'Plus Jakarta Sans', 'Montserrat', 'Inter', sans-serif;
+  --font-heading: 'Outfit', 'Montserrat', sans-serif;
   --transition-speed: 0.3s;
 
   --bg-color: #ffffff;

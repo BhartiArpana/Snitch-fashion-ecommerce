@@ -7,8 +7,12 @@ export const useWishlist = ()=>{
 
     const handleAddToWishlist = async({productId,variantId})=>{
         dispatch(setLoading(true))
+       
+        
         try{
+            console.log('variant ',variantId)
             const data = await addToWishlist({productId,variantId})
+
             dispatch(setWishlist(data.wishlist))
         }catch(err){
             dispatch(setError(err.response.data.mesaage))

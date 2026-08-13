@@ -491,6 +491,24 @@
       }
     }
 
+    &--active {
+      border-color: #ef4444;
+
+      svg {
+        fill: #ef4444;
+        stroke: #ef4444;
+      }
+
+      &:hover {
+        border-color: var(--text-muted);
+
+        svg {
+          fill: var(--text-muted);
+          stroke: var(--text-muted);
+        }
+      }
+    }
+
     @media (max-width: 30rem) {
       width: 3.1rem;
       height: calc(3.1rem * 2 + 0.75rem);
