@@ -13,6 +13,8 @@ import AddToCart from "../features/cart/pages/AddToCart";
 import SearchResult from "../features/products/pages/SearchResult";
 import AddAddress from "../features/auth/pages/AddAddress";
 import Address from "../features/auth/pages/Address";
+import WishlistItem from "../features/wishlist/pages/WishlistCart";
+import OrderSuccess from "../features/cart/pages/OrderSuccess";
 
 export const routes = createBrowserRouter([
     {
@@ -42,6 +44,14 @@ export const routes = createBrowserRouter([
             {
                 path:'/address/add',
                 element:<AddAddress />
+            },
+            {
+                path:'/wishlist',
+                element:<WishlistItem />
+            },
+            {
+                path:'/payment/success',
+                element:<OrderSuccess />
             }
         ]
     },

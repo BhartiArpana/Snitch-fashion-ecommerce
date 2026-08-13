@@ -4,12 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import { setUser } from '../state/auth.slice';
 import '../style/address.scss';
 import { useAuth } from '../hook/useAuth';
+import { useCart } from '../../cart/hook/useCart';
+import { useRazorpay } from "react-razorpay";
+
 const Address = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const addresses = user?.address || [];
   const {handleUpdateAddress} = useAuth()
+  const {handleCreateOrder,handleVerifyPayment} = useCart()
+  const { error, isLoading, Razorpay } = useRazorpay();
 
   const [updatingId, setUpdatingId] = useState(null);
   const [selectedId, setSelectedId] = useState(
@@ -33,10 +38,10 @@ const Address = () => {
     setUpdatingId(null);
   };
 
-  const handleProceed = () => {
-    if (!selectedId) return;
-    navigate('/checkout/payment', { state: { addressId: selectedId } });
-  };
+  // const handleProceed = () => {
+  //   if (!selectedId) return;
+  //   navigate('/checkout/payment', { state: { addressId: selectedId } });
+  // };
 
  const renderCard = (addr) => (
   <div
@@ -87,6 +92,38 @@ const Address = () => {
   </div>
 );
 
+async function handleCheckout(){
+  const order = await handleCreateOrder()
+  console.log('order ',order);
+  const options= {
+      key: "rzp_test_TOntJ7wd0Ghs5z",
+      amount: order.amount, // Amount in paise
+      currency: order.currency,
+      name: user.fullName,
+      description: "Test Transaction",
+      order_id: order.id, // Generate order_id on server
+      handler: async (response) => {
+        console.log(response);
+        const isValid = await handleVerifyPayment(response)
+        if(isValid){
+          navigate('/payment/success')
+        }
+      },
+      prefill: {
+        name: user.fullName,
+        email: user.email,
+        contact: user.mobileNumber,
+      },
+      theme: {
+        color: "#F37254",
+      },
+    };
+
+    const razorpayInstance = new Razorpay(options);
+    razorpayInstance.open();
+  
+}
+
   return (
   <div className="checkout-address">
     <div className="checkout-address__header">
@@ -113,7 +150,7 @@ const Address = () => {
     <button
       className="btn-solid"
       disabled={!selectedId}
-      onClick={handleProceed}
+      onClick={handleCheckout}
     >
       Deliver Here
     </button>

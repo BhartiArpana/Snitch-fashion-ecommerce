@@ -97,6 +97,7 @@ export const removeWishlistCart = async (req, res) => {
 
   res.status(200).json({
     message:'Item deleted successfully',
-    success:true
+    success:true,
+    wishlist
   })
 };
