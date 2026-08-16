@@ -11,7 +11,8 @@ import {
   decrementCartQuantity,
   removeAddToCart,
   createorderController,
-  verifyPaymentController
+  verifyPaymentController,
+  createBuynowOrderController
 } from "../controllers/cart.controller.js";
 
 const route = Router();
@@ -75,4 +76,9 @@ route.post("/payment/create/order", authenticateUser, createorderController);
 // @description verify payment
 // @access private
 route.post("/payment/verify/order", authenticateUser, verifyPaymentController);
+
+// @route /api/cart/payment/buynow/:productId/:variantId
+// @description create payment for buynow
+// @access private
+route.post('/payment/buynow/:productId/:variantId',authenticateUser,createBuynowOrderController)
 export default route;

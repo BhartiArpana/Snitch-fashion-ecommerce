@@ -15,6 +15,7 @@ import AddAddress from "../features/auth/pages/AddAddress";
 import Address from "../features/auth/pages/Address";
 import WishlistItem from "../features/wishlist/pages/WishlistCart";
 import OrderSuccess from "../features/cart/pages/OrderSuccess";
+import BuyNowCheckout from "../features/cart/pages/BuyNowCheckout";
 
 export const routes = createBrowserRouter([
     {
@@ -52,6 +53,10 @@ export const routes = createBrowserRouter([
             {
                 path:'/payment/success',
                 element:<OrderSuccess />
+            },
+            {
+                path:'/checkout/:productId/:variantId',
+                element:<BuyNowCheckout/>
             }
         ]
     },

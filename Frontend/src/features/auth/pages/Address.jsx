@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { setUser } from '../state/auth.slice';
 import '../style/address.scss';
 import { useAuth } from '../hook/useAuth';
 import { useCart } from '../../cart/hook/useCart';
-import { useRazorpay } from "react-razorpay";
+import { useRazorpayCheckout } from '../../cart/hook/useRazorpayCheckout';
 
 const Address = () => {
   const navigate = useNavigate();
@@ -13,8 +13,12 @@ const Address = () => {
   const user = useSelector((state) => state.auth.user);
   const addresses = user?.address || [];
   const {handleUpdateAddress} = useAuth()
-  const {handleCreateOrder,handleVerifyPayment} = useCart()
-  const { error, isLoading, Razorpay } = useRazorpay();
+  const {handleCreateOrder,handleVerifyPayment,handleCreateBuyNowOrder} = useCart()
+  const {launchCheckout} = useRazorpayCheckout()
+  const location = useLocation()
+  const quantity = location.state?.quantity
+  const productId = location.state?.productId
+  const variantId = location.state?.variantId
 
   const [updatingId, setUpdatingId] = useState(null);
   const [selectedId, setSelectedId] = useState(
@@ -37,6 +41,7 @@ const Address = () => {
     }
     setUpdatingId(null);
   };
+// console.log('user ',user);
 
   // const handleProceed = () => {
   //   if (!selectedId) return;
@@ -91,36 +96,17 @@ const Address = () => {
     </button>
   </div>
 );
+// console.log('addressId',selectedId);
 
 async function handleCheckout(){
-  const order = await handleCreateOrder()
-  console.log('order ',order);
-  const options= {
-      key: "rzp_test_TOntJ7wd0Ghs5z",
-      amount: order.amount, // Amount in paise
-      currency: order.currency,
-      name: user.fullName,
-      description: "Test Transaction",
-      order_id: order.id, // Generate order_id on server
-      handler: async (response) => {
-        console.log(response);
-        const isValid = await handleVerifyPayment(response)
-        if(isValid){
-          navigate('/payment/success')
-        }
-      },
-      prefill: {
-        name: user.fullName,
-        email: user.email,
-        contact: user.mobileNumber,
-      },
-      theme: {
-        color: "#F37254",
-      },
-    };
+  let order
+  if(productId && variantId){
+     order = await handleCreateBuyNowOrder({addressId:selectedId,quantity,productId,variantId})
+  }
+  else{  order = await handleCreateOrder({addressId:selectedId})}
 
-    const razorpayInstance = new Razorpay(options);
-    razorpayInstance.open();
+  launchCheckout(order)
+ 
   
 }
 

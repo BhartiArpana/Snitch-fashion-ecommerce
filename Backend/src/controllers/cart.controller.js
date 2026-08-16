@@ -270,7 +270,9 @@ export const removeAddToCart = async (req, res) => {
 
 export const createorderController = async(req,res)=>{
   const user = req.user
-  const cart = await getCartDetails(user._id)
+  const {addressId} = req.body
+  try{
+    const cart = await getCartDetails(user._id)
   if(!cart){
     return res.status(400).json({
       message:'Item not found',
@@ -278,6 +280,13 @@ export const createorderController = async(req,res)=>{
     })
   }
 
+  const selectedAddress = user.address.find(a=>a._id.toString()==addressId)
+  if(!selectedAddress){
+    return res.status(400).json({
+      message:'Address not found',
+      success:false
+    })
+  }
    const order = await createOrder({amount:cart.totalPrice,currency:cart.currency})
 
    const payment =await paymentModel.create( {
@@ -297,8 +306,19 @@ export const createorderController = async(req,res)=>{
         currency:item.price.currency || item.product.price.currency
       },
       images:item.product.variants.images || item.product.images,
-      description:item.product.description
-    }))
+      description:item.product.description,
+      
+    })),
+
+    address:{
+        country:selectedAddress.country || 'india' ,
+        name:selectedAddress.name || user.name,
+        mobileNumber:selectedAddress.mobileNumber || user.mobileNumber,
+        street:selectedAddress.street || '',
+        city:selectedAddress.city || '',
+        state:selectedAddress.state || '',
+        pincode:selectedAddress.pincode || '',
+      }
    })
 
    res.status(201).json({
@@ -306,6 +326,13 @@ export const createorderController = async(req,res)=>{
     success:true,
     order
    })
+  }catch(err){
+    console.log(err)
+    res.status(500).json({
+      message:'Internal server error',
+      success:false
+    })
+  }
 }
 
 export const verifyPaymentController = async(req,res)=>{
@@ -350,4 +377,94 @@ export const verifyPaymentController = async(req,res)=>{
     success:true,
     payment
   })
+}
+
+export const createBuynowOrderController = async(req,res)=>{
+  const {productId,variantId} = req.params
+  let {quantity,addressId} = req.body
+  const user = req.user
+ 
+ try{
+
+  const selectedAddress = user.address.find(a=>a._id.toString()==addressId)
+  if(!selectedAddress){
+    return res.status(400).json({
+      message:'Address not found',
+      success:false
+    })
+  }
+
+   const product = await productModel.findById(productId)
+   if(!product){
+    return res.status(404).json({
+      message:'Product not found',
+      success:false
+    })
+  }
+
+  const variant = product.variants.find(v=>v._id.toString()===variantId)
+  if(!variant){
+    return res.status(404).json({
+      message:'Variant not found',
+      success:false
+    })
+  }
+   if(quantity == undefined || quantity <= 0){quantity = 1}
+   if(quantity > variant.stock){
+    return res.status(400).json({
+      message:'Out of stock',
+      success:false
+    })
+   }
+
+   const amount = variant.price.amount * quantity
+   const order = await createOrder({amount,currency:variant.price.currency})
+   const payment = await paymentModel.create({
+    user:user._id,
+    price:{
+      amount,
+      currency:variant.price.currency || product.price.currency
+    },
+    razorpay:{
+      orderId:order.id
+    },
+    orderItems:[
+      {
+        title:product.title,
+        productId:product._id,
+        variantId:variant._id,
+        quantity:quantity || 1,
+        images:variant.images || product.images,
+        description:product.description,
+        price:{
+          amount:variant.price.amount || amount,
+          currency:variant.price.currency || product.price.currency
+        },
+        
+      }
+    ],
+    address:{
+        country:selectedAddress.country || 'india' ,
+        name:selectedAddress.name || user.name,
+        mobileNumber:selectedAddress.mobileNumber || user.mobileNumber,
+        street:selectedAddress.street || '',
+        city:selectedAddress.city || '',
+        state:selectedAddress.state || '',
+        pincode:selectedAddress.pincode || '',
+      }
+   })
+
+   res.status(201).json({
+    message:'Buynow order created successfully',
+    success:true,
+    order
+   })
+ }catch(err){
+  console.log(err)
+  res.status(500).json({
+    message:'Internal server error',
+    success:false
+  })
+ }
+
 }

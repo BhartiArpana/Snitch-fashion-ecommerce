@@ -5,6 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import "../style/cardDetails.scss";
 import { useCart } from "../../cart/hook/useCart";
 import { useWishlist } from "../../wishlist/hook/useWishlist";
+import { useRazorpay } from "react-razorpay";
 
 
 function parseStructuredText(text) {
@@ -64,16 +65,21 @@ function InfoBlocks({ text }) {
 }
 
 function CardDetails() {
-  const {handleAddToCartHook}  = useCart()
+  const {handleAddToCartHook,handleCreateOrder,handleVerifyPayment}  = useCart()
   const { id } = useParams();
   const { handleGetProductDetails } = useProduct();
   const product = useSelector((state) => state.products.productDeatails);
-  const isLoading = useSelector((state) => state.products.loading);
+  // const isLoading = useSelector((state) => state.products.loading);
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
-  const location = useLocation
+  const location = useLocation()
   const {handleAddToWishlist,handleRemoveWishlist,handleGetWishlist} = useWishlist()
   const wishlist = useSelector((state) => state.wishlist.wishlist);
+  const cartItem = useSelector(state=>state.cart.items)
+  const { error, isLoading, Razorpay } = useRazorpay();
+  // console.log('cartItem ',cartItem)
+  // console.log('wishlist ',wishlist);
+  
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0]); // null = base product
@@ -93,6 +99,17 @@ function CardDetails() {
       }
     );
   }, [wishlist, product?._id, selectedVariant?._id]);
+
+  // go to cart logic
+  const isInCart = useMemo(() => {
+  const cartItems = cartItem?.items || [];
+  if (!product?._id || !selectedVariant?._id) return false;
+  return cartItems.some((item) => {
+    const itemProductId = item.product?._id || item.product;
+    const itemVariantId = typeof item.variants === 'string' ? item.variants : item.variants?._id;
+    return itemProductId === product._id && itemVariantId === selectedVariant._id;
+  });
+}, [cartItem, product?._id, selectedVariant?._id]);
 
   useEffect(() => {
     if (id) {
@@ -151,10 +168,12 @@ function CardDetails() {
      await handleAddToCartHook({productId,variantId})
   }
 
-  function handleBuyNow() {
+  async function handleBuyNow({productId,variantId}) {
+    
     if (!user) {
       navigate("/login");
     }
+    navigate(`/checkout/${productId}/${variantId}`)
   }
 
   async function handleClickWishlist() {
@@ -343,19 +362,27 @@ function CardDetails() {
           <div className="product-actions">
             <div className="product-actions__primary">
               <button className="add-to-cart-btn" onClick={()=>{
-                handleAddToCard({
-                  productId:product._id,
-                  variantId:selectedVariant._id
-                })
+                if (!user) {
+                 navigate("/login", { state: { from: location.pathname } });
+                 return;
+                }
+                if (isInCart) {
+                   navigate("/cart");
+                } else {
+                    handleAddToCard({
+                    productId: product._id,
+                    variantId: selectedVariant._id
+                    });
+                  }
               }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="9" cy="21" r="1" />
                   <circle cx="20" cy="21" r="1" />
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                 </svg>
-                ADD TO CART
+                {isInCart ? "GO TO CART" : "ADD TO CART"}
               </button>
-              <button className="buy-now-btn" onClick={()=>handleBuyNow({productId:product._id,variantId:selectedVariant._id})}>
+              <button className="buy-now-btn" onClick={()=>handleBuyNow({productId:(product._id),variantId:selectedVariant._id})}>
                 BUY NOW
               </button>
             </div>

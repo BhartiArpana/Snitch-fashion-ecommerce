@@ -69,3 +69,4 @@ export async function searchProducts(searchItem){
   const response = await productApiInstance.get(`/search?searchItem=${searchItem}`)
   return response.data
 }
+

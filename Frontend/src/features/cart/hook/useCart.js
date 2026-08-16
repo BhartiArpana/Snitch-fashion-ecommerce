@@ -1,5 +1,5 @@
-import { addToCart, getCart, incrementCartItemApi, decrementCartItemApi, removeCartItem,createOrder, verifyPayment } from '../services/cart.api'
-import { setItems, addItem, setError, setLoading, incrementCartItem, decrementCartItem,removeItem } from '../state/cart.state'
+import { addToCart, getCart, incrementCartItemApi, decrementCartItemApi, removeCartItem, createOrder, verifyPayment, createBuyNowOrder } from '../services/cart.api'
+import { setItems, addItem, setError, setLoading, incrementCartItem, decrementCartItem, removeItem } from '../state/cart.state'
 import { useDispatch } from 'react-redux'
 
 export const useCart = () => {
@@ -75,7 +75,7 @@ export const useCart = () => {
         dispatch(setLoading(true))
         try {
             const data = await removeCartItem({ productId, variantId })
-            dispatch(removeItem({productId,variantId}))
+            dispatch(removeItem({ productId, variantId }))
             return data
         } catch (err) {
             dispatch(setError(err.response.data.message || err.message))
@@ -85,30 +85,43 @@ export const useCart = () => {
         }
     }
 
-    const handleCreateOrder = async()=>{
+    const handleCreateOrder = async ({addressId}) => {
         dispatch(setLoading(true))
-        try{
-            const data = await createOrder()
+        try {
+            const data = await createOrder({addressId})
             return data.order
-        }catch(err){
+        } catch (err) {
             dispatch(setError(err.response.data.message || err.message))
             return null
-        }finally{
+        } finally {
             dispatch(setLoading(false))
         }
     }
 
-    const handleVerifyPayment = async({razorpay_order_id,razorpay_payment_id,razorpay_signature})=>{
+    const handleVerifyPayment = async ({ razorpay_order_id, razorpay_payment_id, razorpay_signature }) => {
         dispatch(setLoading(true))
-        try{
-            const data = await verifyPayment({razorpay_order_id,razorpay_payment_id,razorpay_signature})
+        try {
+            const data = await verifyPayment({ razorpay_order_id, razorpay_payment_id, razorpay_signature })
             return data.success
-        }catch(err){
+        } catch (err) {
             dispatch(setError(err.response.data.message || err.message))
-        }finally{
+        } finally {
             dispatch(setLoading(false))
         }
     }
 
-    return { handleAddToCartHook, handleGetCart, handleIncrementCartItem, handleDecrementCartItem, handleRemoveCartItem,handleCreateOrder,handleVerifyPayment }
+    const handleCreateBuyNowOrder = async ({addressId,quantity,productId,variantId }) => {
+        dispatch(setLoading(true))
+        try {
+            const data = await createBuyNowOrder({addressId,quantity,productId,variantId })
+            return data.order
+        } catch (err) {
+            dispatch(setError(err.response.data.message || err.message))
+            return null
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
+    return { handleAddToCartHook, handleGetCart, handleIncrementCartItem, handleDecrementCartItem, handleRemoveCartItem, handleCreateOrder, handleVerifyPayment,handleCreateBuyNowOrder }
 }

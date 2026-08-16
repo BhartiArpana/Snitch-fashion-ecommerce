@@ -6,9 +6,9 @@ const razorpay = new Razorpay({
     key_secret:config.RAZORPAY_KEY_SECRET
 })
 
-export const createOrder = async ({amount,currency = "IND"})=>{
+export const createOrder = async ({amount,currency = "INR"})=>{
     const options = {
-        amount : amount * 100, 
+        amount : Math.round(amount * 100), 
         currency
     }
 

@@ -19,8 +19,8 @@ function AddToCart(){
 
   async function handleCheckOut(){
     navigate('/address')
-    // const order = await handleCreateOrder()
-    // console.log('order ',order)
+    
+    // console.log('order ',orderconst order = await handleCreateOrder())
   }
 
   useEffect(() => {

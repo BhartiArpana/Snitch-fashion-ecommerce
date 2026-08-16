@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import addressSchema from './address.model.js'
 
 const userSchema = new mongoose.Schema({
   fullName: {
@@ -30,43 +31,9 @@ const userSchema = new mongoose.Schema({
   googleId: {
     type: String,
   },
-  address: [
-    {
-      country: {
-        type: String,
-        default: "India",
-      },
-      name: {
-        type: String,
-        required: true,
-      },
-      mobileNumber: {
-        type: String,
-        required: true,
-      },
-      street: {
-        type: String,
-        required:true
-      },
-      city: {
-        type: String,
-        required: true,
-      },
-      pincode: {
-        type: String,
-        required: true,
-        
-      },
-      state: {
-        type: String,
-        required: true,
-      },
-      isDefault: {
-        type: Boolean,
-        default: false,
-      },
-    },
-  ],
+  address:{
+     type:[addressSchema],
+  }
 });
 
 userSchema.pre("save", async function () {
