@@ -51,3 +51,8 @@ export const updateAddress = async({form,addressId})=>{
       const response = await authApiInstance.patch(`/address/${addressId}`,form)
       return response.data
 }
+
+export const logout = async()=>{
+  const response = await authApiInstance.get('/logout')
+  return response.data
+}

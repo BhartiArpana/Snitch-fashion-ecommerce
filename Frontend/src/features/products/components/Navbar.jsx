@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import '../style/navbar.scss';
 import { useCart } from '../../cart/hook/useCart';
 import { useProduct } from '../hook/useProduct';
+import { useAuth } from '../../auth/hook/useAuth';
 
 function Navbar() {
   const {handleSearchSuggestion} = useProduct()
@@ -13,6 +14,7 @@ function Navbar() {
   const navigate = useNavigate();
   const themeMode = useSelector((state) => state.theme.mode);
   const user = useSelector((state) => state.auth.user);
+  const {handleLogOut} = useAuth()
   const {handleGetCart} = useCart()
   const items = useSelector(state=>state.cart.items)
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -76,7 +78,8 @@ function Navbar() {
     navigate(`/search?q=${encodeURIComponent(title)}`);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
+    await handleLogOut()
     dispatch(setUser(null));
     setIsDropdownOpen(false);
     setIsMobileMenuOpen(false);

@@ -1,6 +1,7 @@
 import userModel from "../model/user.model.js";
 import { config } from "../config/config.js";
 import jwt from "jsonwebtoken";
+import blacklistModel from "../model/blacklist.model.js";
 
 const generateToken = (user, res, message) => {
   const token = jwt.sign(
@@ -169,6 +170,32 @@ export const updateAddress = async(req,res)=>{
     });
 
   // console.log(address._id)
+}
+
+
+export const logout = async(req,res)=>{
+  const token = req.cookies.token
+  if(!token){
+    return res.status(400).json({
+      message:'Token not provided'
+    })  
+  }
+
+  const isTokenBlacklisted = await blacklistModel.findOne({ token });
+  if (isTokenBlacklisted) {
+    return res.status(400).json({
+      message: 'Invalid token',
+    });
+  }
+
+  const blacklistToken = new blacklistModel({ token });
+  await blacklistToken.save();
+
+  res.clearCookie('token');
+  res.status(200).json({
+    message: 'User logged out successfully',
+  });
+
 }
 
 
