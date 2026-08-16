@@ -22,40 +22,17 @@ function OrderSuccess() {
 
   // Extract items list and total payment amount from state (using items.totalPrice)
   const cartItemsList = cartData?.items || location.state?.items || [];
-  const totalPrice = cartData?.totalPrice || location.state?.totalPrice || 3498;
-  const currency = cartData?.currency || 'INR';
+  const totalPrice = location.state?.totalPrice;
+  const currency = location.state?.currency || 'INR';
+  
 
-  // Fallback demo items if accessed directly without active cart in state
-  const fallbackItems = [
-    {
-      _id: 'demo-1',
-      product: {
-        title: 'OVERSIZED FIT TEXTURED SHIRT',
-        description: 'Cotton blend relaxed fashion shirt',
-        images: [{ url: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=600&q=80' }]
-      },
-      quantity: 1,
-      price: { amount: 1799, currency: 'INR' }
-    },
-    {
-      _id: 'demo-2',
-      product: {
-        title: 'RELAXED FIT CARGO TROUSERS',
-        description: 'Premium utility fit pants',
-        images: [{ url: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=600&q=80' }]
-      },
-      quantity: 1,
-      price: { amount: 1699, currency: 'INR' }
-    }
-  ];
-
-  const displayItems = cartItemsList.length > 0 ? cartItemsList : fallbackItems;
+  const displayItems = cartItemsList.length > 0 ? cartItemsList : [];
   const formattedTotal = typeof totalPrice === 'number' ? totalPrice.toLocaleString() : totalPrice;
 
   // Order Details Metadata
   const orderId = location.state?.orderId || `SNTCH-${Math.floor(10000000 + Math.random() * 90000000)}`;
   const orderDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  const defaultAddress = user?.address?.find((a) => a.isDefault) || user?.address?.[0];
+  const defaultAddress = location.state?.address || user?.address?.[0];
 
   return (
     <div className="order-success-page">
@@ -120,7 +97,7 @@ function OrderSuccess() {
           <div className="order-success-page__main-column">
             
             {/* Purchased Items Card */}
-            <div className="order-success-page__card">
+            {/* <div className="order-success-page__card">
               <h3 className="order-success-page__card-title">
                 Purchased Items ({displayItems.length})
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
@@ -158,7 +135,7 @@ function OrderSuccess() {
                   );
                 })}
               </div>
-            </div>
+            </div> */}
 
             {/* Shipping Address & Payment Card */}
             <div className="order-success-page__card">

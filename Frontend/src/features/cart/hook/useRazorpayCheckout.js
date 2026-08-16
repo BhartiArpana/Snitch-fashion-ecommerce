@@ -9,7 +9,8 @@ export function useRazorpayCheckout() {
   const { handleVerifyPayment } = useCart();
   const { Razorpay } = useRazorpay();
 
-  function launchCheckout(order) {
+  function launchCheckout({order,address}) {
+    console.log("🚀 ~ launchCheckout ~ address:", address)
     console.log("🚀 ~ launchCheckout ~ order:", order)
     const options = {
       key: "rzp_test_TOntJ7wd0Ghs5z",
@@ -20,7 +21,14 @@ export function useRazorpayCheckout() {
       order_id: order.id,
       handler: async (response) => {
         const isValid = await handleVerifyPayment(response);
-        if (isValid) navigate("/payment/success");
+        if (isValid) navigate("/payment/success",{
+          state:{
+            totalPrice:Math.floor((order.amount)/100),
+            currency:order.currency,
+            orderId:order.id,
+            address
+          }
+        });
       },
       prefill: {
         name: user.fullName,

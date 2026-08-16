@@ -89,7 +89,7 @@ export const useCart = () => {
         dispatch(setLoading(true))
         try {
             const data = await createOrder({addressId})
-            return data.order
+            return {order:data.order,address:data.address}
         } catch (err) {
             dispatch(setError(err.response.data.message || err.message))
             return null
@@ -114,7 +114,7 @@ export const useCart = () => {
         dispatch(setLoading(true))
         try {
             const data = await createBuyNowOrder({addressId,quantity,productId,variantId })
-            return data.order
+            return {order:data.order,address:data.address}
         } catch (err) {
             dispatch(setError(err.response.data.message || err.message))
             return null

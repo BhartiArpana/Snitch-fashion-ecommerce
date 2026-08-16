@@ -324,7 +324,8 @@ export const createorderController = async(req,res)=>{
    res.status(201).json({
     message:'order created successfully',
     success:true,
-    order
+    order,
+    address:selectedAddress
    })
   }catch(err){
     console.log(err)
@@ -457,7 +458,8 @@ export const createBuynowOrderController = async(req,res)=>{
    res.status(201).json({
     message:'Buynow order created successfully',
     success:true,
-    order
+    order,
+    address:selectedAddress 
    })
  }catch(err){
   console.log(err)

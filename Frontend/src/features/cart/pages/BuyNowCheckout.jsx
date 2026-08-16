@@ -56,14 +56,14 @@ function BuyNowCheckout() {
     }
     setPlacing(true);
     try {
-      const order = await handleCreateBuyNowOrder({
+      const {order,address} = await handleCreateBuyNowOrder({
         productId,
         variantId,
         quantity,
         addressId: defaultAddress._id,
       });
       console.log('order',order)
-      launchCheckout(order);
+      launchCheckout({order,address});
     } finally {
       setPlacing(false);
     }

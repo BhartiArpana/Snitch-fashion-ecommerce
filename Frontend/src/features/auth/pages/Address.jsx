@@ -99,13 +99,13 @@ const Address = () => {
 // console.log('addressId',selectedId);
 
 async function handleCheckout(){
-  let order
+  let order,address
   if(productId && variantId){
-     order = await handleCreateBuyNowOrder({addressId:selectedId,quantity,productId,variantId})
+     ({order,address} = await handleCreateBuyNowOrder({addressId:selectedId,quantity,productId,variantId}))
   }
-  else{  order = await handleCreateOrder({addressId:selectedId})}
+  else{ ({order,address} = await handleCreateOrder({addressId:selectedId}))}
 
-  launchCheckout(order)
+  launchCheckout({order,address})
  
   
 }
