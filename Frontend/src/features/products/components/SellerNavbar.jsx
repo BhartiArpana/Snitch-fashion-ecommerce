@@ -1,10 +1,14 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../../../app/theme.state';
 import '../style/sellernavbar.scss';
+import { useAuth } from '../../auth/hook/useAuth';
 
 function SellerNavbar({ onMenuClick }) {
   const dispatch = useDispatch();
   const themeMode = useSelector((state) => state.theme.mode);
+    const user = useSelector((state) => state.auth.user);
+   const str = user.fullName.split('')
+
 
   return (
     <header className="navbar">
@@ -38,7 +42,7 @@ function SellerNavbar({ onMenuClick }) {
         </button>
 
         <button className="navbar__avatar" aria-label="Account menu">
-          <span>S</span>
+          <span>{str[0]}</span>
         </button>
       </div>
     </header>

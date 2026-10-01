@@ -1,5 +1,7 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import '../style/sidebar.scss';
+import { useAuth } from '../../auth/hook/useAuth';
+import { useDispatch, useSelector } from 'react-redux';
 
 const NAV_ITEMS = [
   {
@@ -62,6 +64,18 @@ const NAV_ITEMS = [
 ];
 
 function Sidebar({ isOpen, onClose }) {
+  const {handleLogOut} = useAuth()
+    const user = useSelector((state) => state.auth.user);
+     const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  async function logout(){
+     await handleLogOut()
+     navigate('/login');
+          dispatch(setUser(null));
+
+  }
+
   return (
     <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
       <div className="sidebar__brand">
@@ -100,7 +114,7 @@ function Sidebar({ isOpen, onClose }) {
       </nav>
 
       <div className="sidebar__footer">
-        <button className="sidebar__logout" type="button">
+        <button className="sidebar__logout" type="button" onClick={logout}>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
             <polyline points="16 17 21 12 16 7" />
