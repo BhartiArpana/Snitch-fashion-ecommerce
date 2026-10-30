@@ -61,7 +61,7 @@ export const login = async (req, res) => {
     }
     const match = await user.comparepassword(password);
     if (!match) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "Invalid email or password",
       });
     }
@@ -74,7 +74,7 @@ export const login = async (req, res) => {
 export const googleCallback = async (req, res) => {
   // console.log(req.user)
   const { displayName, emails, profileUrl, id } = req.user;
-  const user = await userModel.findOne({ email: emails[0].value });
+  let user = await userModel.findOne({ email: emails[0].value });
   if (!user) {
     user = await userModel.create({
       fullName: displayName,
