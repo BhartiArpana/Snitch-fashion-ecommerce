@@ -55,7 +55,7 @@ export const login = async (req, res) => {
   try {
     const user = await userModel.findOne({ email });
     if (!user) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "Invalid email or password",
       });
     }
@@ -91,7 +91,7 @@ export const googleCallback = async (req, res) => {
   );
   res.cookie("token", token);
 
-  res.redirect(config.NODE_ENV ? "http://localhost:5173" : "/");
+  res.redirect(config.NODE_ENV==="development"  ? "http://localhost:5173" : "/");
 };
 
 export const getme = async (req, res) => {
